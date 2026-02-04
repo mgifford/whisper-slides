@@ -1,0 +1,28 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+.VolumeIcon.icns
+.Spotlight-V100
+.Trashes
+._*
+
+# Node
+node_modules/
+package-lock.json
+
+# Whisper output (generated locally)
+whisper-demo/transcript.json
+whisper-demo/transcript.txt
+
+# Editor files
+*.swp
+*.swo
+*.bak
+*.orig
+*~
+.vscode/
+.idea/
+
+# Logs
+*.log

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Whisper Live Captioning Demo</title>
+  <link rel="stylesheet" href="ca-slides/slides.css">
+  <script src="ca-slides/b6plus.js"></script>
+  <script src="ca-slides/captions-button.js?v=2"></script>
+  <script src="ca-slides/offline-indicator.js"></script>
+  <script src="ca-slides/footer-overlap-detector.js"></script>
+  <script>
+  window.SeededSVG = {
+    density: 20,
+    colors: ["#162E51", "#005EA2", "#FA9441"],
+    opacityRange: [0.05, 0.15],
+    shapes: { circles: true, lines: false, blobs: false, triangles: false, confetti: false },
+    avoidCenter: true
+  };
+  </script>
+  <script src="ca-slides/seeded-svgs.js" defer></script>
+  <script src="ca-slides/whisper-transcript.js?v=2" defer></script>
+</head>
+
+<body class="shower fade-in duration=30 warn=5 hidemouse">
+  <div class="progress"></div>
+  <div class="clock"></div>
+  <section aria-live="assertive" aria-label="Slide mode status">Leaving slide mode.</section>
+
+  <!-- Slide 1: Cover -->
+  <section class="slide cover clear" id="cover" aria-label="Cover: Whisper Live Captioning Demo">
+    <h1>Whisper Live Captioning Demo</h1>
+    <h2>Accessible HTML Presentation with Real-Time Transcription</h2>
+    <address>A template for creating presentations with live captions using Whisper.cpp</address>
+    <div class="notes" hidden>Standalone presentation template demonstrating Whisper.cpp integration for live captioning.</div>
+  </section>
+
+    <!-- Slide 6: Caption Listener Status -->
+    <section class="slide" id="caption-listener" aria-label="Caption Listener Status">
+      <h2>Caption Listener Status</h2>
+      <div id="caption-listener-widget"></div>
+      <div class="details" hidden>
+        <p>The widget below checks if the transcript file is available. If Whisper is running, you’ll see a green button. If not, a help link appears with setup instructions.</p>
+      </div>
+    </section>
+    <script>
+    // Caption Listener Widget
+    (function() {
+      const el = document.getElementById('caption-listener-widget');
+      if (!el) return;
+      const url = 'whisper-demo/transcript.json';
+      function render(running) {
+        if (running) {
+          el.innerHTML = '<button style="background: #1db954; color: #fff; border: none; border-radius: 1.5em; padding: 0.7em 1.5em; font-size: 1.2em; font-weight: bold; box-shadow: 0 1px 4px #111;">🟢 Whisper Caption Listener Running</button>';
+        } else {
+          el.innerHTML = '<a href="#caption-help" style="background: #eee; color: #005EA2; border: 1px solid #bbb; border-radius: 1.5em; padding: 0.7em 1.5em; font-size: 1.2em; font-weight: bold; text-decoration: none; display: inline-block;">🛈 Caption: How to Start</a>';
+        }
+      }
+      async function check() {
+        try {
+          const res = await fetch(url, { cache: 'no-store' });
+          render(res.ok);
+        } catch {
+          render(false);
+        }
+      }
+      check();
+      setInterval(check, 2000);
+    })();
+    </script>
+
+    <!-- Slide 7: Caption Help -->
+    <section class="slide" id="caption-help" aria-label="How to Start Caption Listener">
+      <h2>How to Start the Caption Listener</h2>
+      <ol>
+        <li>Open a terminal in your project root.</li>
+        <li>Set <code>WHISPER_BIN</code> and <code>WHISPER_MODEL</code> environment variables if needed.</li>
+        <li>Run <code>npm run dev:whisper</code> to start the caption listener and transcript writer.</li>
+        <li>Reload this page. The green button will appear when the transcript is available.</li>
+      </ol>
+      <p class="small">If you prefer, you can use <code>npm run dev:transcript</code> to mirror a text file to JSON instead.</p>
+    </section>
+
+  <!-- Slide 2: Setup -->
+  <section class="slide" id="setup" aria-label="Setup">
+    <h2>Setup (Local)</h2>
+    <ul>
+      <li>Point the iframe at a local demo page (gitignored)</li>
+      <li>Write transcript JSON to <code>/presentations/whisper-demo/transcript.json</code></li>
+      <li>Use provided helper to launch Whisper or mirror output</li>
+    </ul>
+    <div class="details" hidden>
+      <p><strong>Runner:</strong> <code>npm run dev:whisper</code> (configure with <code>WHISPER_BIN</code> &amp; <code>WHISPER_MODEL</code>)</p>
+      <p><strong>Watcher alternative:</strong> <code>npm run dev:transcript</code> to mirror <code>transcript.txt</code> to JSON</p>
+    </div>
+  </section>
+
+  <!-- Slide 3: Demo Iframe -->
+  <section class="slide" id="demo-iframe" aria-label="Demo Iframe">
+    <h2>Demo Iframe</h2>
+    <div class="demo-frame">
+      <iframe
+        src="whisper-demo/index.html"
+        title="Whisper Web Demo"
+        loading="lazy"
+        height="360"
+        sandbox="allow-scripts allow-downloads"
+        referrerpolicy="no-referrer"
+      ></iframe>
+      <p class="small">If the demo doesn't load, open it directly: <a href="whisper-demo/index.html">whisper-demo/index.html</a></p>
+    </div>
+    <div class="notes" hidden>Iframe can be replaced with a hosted demo URL if preferred.</div>
+  </section>
+
+  <!-- Slide 4: Live Transcript -->
+  <section class="slide" id="demo-transcript" aria-label="Live Transcript">
+    <h2>Live Transcript</h2>
+    <div class="transcript">
+      <h3 class="small">Transcript</h3>
+      <div id="whisper-transcript" class="transcript-box" aria-live="polite" data-transcript-src="whisper-demo/transcript.json"></div>
+      <p class="small">Polling <code>/presentations/whisper-demo/transcript.json</code> every second.</p>
+    </div>
+    <div class="notes" hidden>Deck-side polling decouples transcript from iframe implementation.</div>
+  </section>
+
+  <!-- Slide 5: Combined View -->
+  <section class="slide" id="demo-combined" aria-label="Combined Demo">
+    <h2>Combined</h2>
+    <div class="columns">
+      <div>
+        <h3 class="small">Demo</h3>
+        <div class="demo-frame">
+          <iframe
+            src="whisper-demo/index.html"
+            title="Whisper Web Demo"
+            loading="lazy"
+            height="260"
+            sandbox="allow-scripts allow-downloads"
+            referrerpolicy="no-referrer"
+          ></iframe>
+        </div>
+      </div>
+      <div>
+        <h3 class="small">Transcript</h3>
+        <div class="transcript-box" aria-live="polite" data-transcript-src="whisper-demo/transcript.json" id="whisper-transcript-2"></div>
+      </div>
+    </div>
+    <div class="notes" hidden>Separate element ID to allow multi-box polling later, if needed.</div>
+  </section>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "whisper-demo-presentation",
+  "version": "1.0.0",
+  "description": "Accessible HTML presentation template with live captioning powered by Whisper.cpp",
+  "main": "index.html",
+  "scripts": {
+    "dev:whisper": "node scripts/run-whisper.js",
+    "dev:transcript": "node scripts/whisper-transcript-watch.js",
+    "test:links": "bash scripts/check-links.sh",
+    "test": "npm run test:links"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR-USERNAME/whisper-demo-presentation.git"
+  },
+  "keywords": [
+    "presentation",
+    "slides",
+    "accessibility",
+    "whisper",
+    "live-captioning",
+    "speech-recognition",
+    "a11y"
+  ],
+  "author": "Mike Gifford",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "chokidar": "^4.0.3"
+  }
+}
