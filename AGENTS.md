@@ -20,6 +20,8 @@ Authoring guidance for creating accessible, well-structured presentations with t
 
 ### Live Captions
 - The template includes automatic live captioning support via Whisper.cpp.
+- **Important**: Live captioning only works when running locally - it will not work on GitHub Pages or other static hosting.
+- Whisper.cpp requires a local server process with microphone access and file system writes.
 - Caption display appears at the bottom of slides when active.
 - Use the caption button in the UI to check status and get setup help.
 - Test captions before presentations to ensure audio quality.

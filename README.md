@@ -5,11 +5,13 @@ An accessible HTML presentation template with real-time live captioning powered 
 ## ✨ Features
 
 - **Accessible HTML slides** using the [B6+ framework](https://www.w3.org/Talks/Tools/b6plus/)
-- **Real-time live captioning** with Whisper.cpp speech recognition
+- **Real-time live captioning** with Whisper.cpp speech recognition (**local only** - see note below)
 - **Standalone and portable** - no build system required, just open `index.html` in a browser
 - **Test-driven** - includes scripts to validate links and accessibility
 - **Keyboard navigation** - full presentation control without a mouse
 - **Responsive design** - works on desktop and mobile devices
+
+> **⚠️ Important**: Live captioning with Whisper.cpp only works when running locally on your machine. It **will not work** on GitHub Pages or other static hosting because it requires a local server process with microphone access. The presentation slides themselves work fine on GitHub Pages, but without live captions.
 
 ## 🚀 Quick Start
 
@@ -27,7 +29,11 @@ git submodule update --init --recursive
 
 Simply open `index.html` in your web browser. The presentation works without any build step!
 
+**For GitHub Pages deployment**: You can view the presentation at `https://mgifford.github.io/whisper-slides/` but live captioning will not be available (local-only feature).
+
 ### 3. (Optional) Enable Live Captioning
+
+**Note**: Live captioning only works when running the presentation locally, not on GitHub Pages or other static hosting.
 
 To enable real-time live captioning:
 

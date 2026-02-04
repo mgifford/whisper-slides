@@ -83,13 +83,15 @@
 
   <!-- Slide 2: Setup -->
   <section class="slide" id="setup" aria-label="Setup">
-    <h2>Setup (Local)</h2>
+    <h2>Setup (Local Only)</h2>
     <ul>
+      <li>Live captioning only works when running locally (not on GitHub Pages)</li>
       <li>Point the iframe at a local demo page (gitignored)</li>
-      <li>Write transcript JSON to <code>/presentations/whisper-demo/transcript.json</code></li>
+      <li>Write transcript JSON to <code>/whisper-demo/transcript.json</code></li>
       <li>Use provided helper to launch Whisper or mirror output</li>
     </ul>
     <div class="details" hidden>
+      <p><strong>Why local only?</strong> Whisper.cpp requires a compiled binary with microphone access and file system writes - not possible with static hosting.</p>
       <p><strong>Runner:</strong> <code>npm run dev:whisper</code> (configure with <code>WHISPER_BIN</code> &amp; <code>WHISPER_MODEL</code>)</p>
       <p><strong>Watcher alternative:</strong> <code>npm run dev:transcript</code> to mirror <code>transcript.txt</code> to JSON</p>
     </div>
