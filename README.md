@@ -16,8 +16,8 @@ An accessible HTML presentation template with real-time live captioning powered 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/whisper-demo-presentation.git
-cd whisper-demo-presentation
+git clone https://github.com/mgifford/whisper-slides.git
+cd whisper-slides
 
 # Initialize the whisper.cpp submodule
 git submodule update --init --recursive
@@ -74,7 +74,7 @@ The caption system will:
 ## 📁 Project Structure
 
 ```
-whisper-demo-presentation/
+whisper-slides/
 ├── index.html              # Main presentation file
 ├── slides/                 # Presentation framework (B6+)
 │   ├── slides.css          # Styling

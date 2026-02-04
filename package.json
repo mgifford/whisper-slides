@@ -1,5 +1,5 @@
 {
-  "name": "whisper-demo-presentation",
+  "name": "whisper-slides",
   "version": "1.0.0",
   "description": "Accessible HTML presentation template with live captioning powered by Whisper.cpp",
   "main": "index.html",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR-USERNAME/whisper-demo-presentation.git"
+    "url": "https://github.com/mgifford/whisper-slides.git"
   },
   "keywords": [
     "presentation",
