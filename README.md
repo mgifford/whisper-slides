@@ -76,7 +76,7 @@ The caption system will:
 ```
 whisper-demo-presentation/
 ├── index.html              # Main presentation file
-├── ca-slides/              # Presentation framework (B6+)
+├── slides/                 # Presentation framework (B6+)
 │   ├── slides.css          # Styling
 │   ├── b6plus.js           # Core presentation engine
 │   ├── captions-button.js  # Live caption controls
@@ -91,7 +91,7 @@ whisper-demo-presentation/
 ## 🎯 Using This as a Template
 
 1. **Edit the slides**: Modify `index.html` to create your presentation content
-2. **Customize styling**: Edit `ca-slides/slides.css` or add your own CSS
+2. **Customize styling**: Edit `slides/slides.css` or add your own CSS
 3. **Add your content**: Replace the demo slides with your own
 4. **Test accessibility**: Run `npm run test:accessibility` (requires npm install)
 

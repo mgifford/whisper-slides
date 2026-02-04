@@ -85,37 +85,7 @@ body.full .slide {
 }
 }
 
-/* Local fonts for CivicActions branding */
-@font-face {
-  font-family: "Nunito";
-  src: url("assets/fonts/Nunito-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Nunito";
-  src: url("assets/fonts/Nunito-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Merriweather";
-  src: url("assets/fonts/Merriweather-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Merriweather";
-  src: url("assets/fonts/Merriweather-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Style for the slides for TPAC 2025, to be used together with the
+/* Style for the slides for accessible presentations, to be used together with the
    Shower script or the b6+ script. For usage instructions, see
    https://www.w3.org/2025/Talks/TPAC/Templates/Overview.html
 
@@ -166,15 +136,15 @@ body.full .slide {
    [1] http://www.w3.org/Consortium/Legal/copyright-software
 */
 
-/* CivicActions-aligned, font-face free stylesheet */
+/* Accessible presentation stylesheet */
 
 
 /* Colors and backgrounds for light mode */
 html, .lightmode {
-  --index-bg: #162E51;
+  --index-bg: #1a1a1a;
   --index-fg: #ffffff;
-  --address-fg: #FA9441;
-  --h3-fg: #005EA2;
+  --address-fg: #0066cc;
+  --h3-fg: #0066cc;
   --slide-fg: #171717;
   --slide-bg: #ffffff;
   --slide-text-shadow: none;
@@ -182,24 +152,24 @@ html, .lightmode {
   --cover-event-fg: #73B3E7;
   --cover-image: url("cover-light.svg");
   --final-bg: #ffffff;
-  --slide-number-fg: #162E51;
+  --slide-number-fg: #1a1a1a;
   --comment-bg: #171717;
   --comment-fg: #ffffff;
   --long-comment-bg: #ffffff;
   --long-comment-fg: #171717;
   --toc-bg: #ffffff;
   --toc-fg: #171717;
-  --toc-list-marker-fg: #162E51;
+  --toc-list-marker-fg: #1a1a1a;
   --b6-canvas-fg: rgba(24, 110, 161, 0.8);
   --em-bg: #FFBC78;
   --code-bg: #F0F0F0;
   --table-striped-bg: #F0F0F0;
-  --link-fg: #005EA2;
-  --visited-fg: #1A4480;
+  --link-fg: #0066cc;
+  --visited-fg: #004080;
   --note-bg: #eef2f6;
   --note-border: #c7d1dc;
   --can-invert-filter: none;
-  --h1-h2-fg: #162E51;
+  --h1-h2-fg: #1a1a1a;
   --brand-logo: url("assets/CA-Full-Logo-Red.svg");
   --brand-mark: url("assets/CA-Short-Logo-Red.svg");
   --footer-fg: #6d6d6d;
@@ -236,8 +206,8 @@ html, .lightmode {
     --note-border: #3a4452;
     --can-invert-filter: invert(1);
     --h1-h2-fg: #ffffff;
-    --brand-logo: url("assets/CA-Full-Logo-Red.svg");
-    --brand-mark: url("assets/CA-Short-Logo-Red.svg");
+    --brand-logo: none;
+    --brand-mark: none;
     --footer-fg: #bfbfbf;
   }
   .slide {
@@ -250,7 +220,7 @@ html, .lightmode {
 .darkmode {
   --index-bg: #171717;
   --index-fg: #e6e6e6;
-  --address-fg: #FA9441;
+  --address-fg: #0099ff;
   --h3-fg: #73B3E7;
   --slide-fg: #f0f0f0;
   --slide-bg: #171717;
