@@ -178,6 +178,235 @@ window.SeededSVG = {
 
 ## Testing & Quality
 
+This project follows **test-driven development (TDD)** principles. Run tests before committing changes.
+
+### Quick Test Commands
+```bash
+npm test              # Run all tests (HTML, links, spelling)
+npm run test:html     # Validate HTML structure and semantics
+npm run test:links    # Check for broken links
+npm run test:spell    # Spell check all content
+npm run test:a11y     # Accessibility audit (requires local server)
+```
+
+### Test Categories
+
+#### 1. HTML Validation (`npm run test:html`)
+Validates HTML structure, semantics, and best practices using [html-validate](https://html-validate.org/).
+
+**What it checks:**
+- Proper nesting of elements
+- Required attributes (e.g., `alt` on images)
+- ARIA usage and accessibility
+- Landmark uniqueness
+- Semantic HTML structure
+
+**Configuration**: [.htmlvalidate.json](.htmlvalidate.json)
+
+**Common failures:**
+- Missing `alt` attributes on images
+- Improper heading hierarchy
+- Invalid ARIA attributes
+- Inline styles (generates warnings)
+
+**Fix strategy:**
+1. Read the error message carefully - it points to line numbers
+2. Check the [HTML Validate docs](https://html-validate.org/rules/) for the specific rule
+3. Fix the markup, don't disable the rule unless absolutely necessary
+
+#### 2. Link Checking (`npm run test:links`)
+Verifies all local file references exist and are accessible.
+
+**What it checks:**
+- Local files referenced in `href` and `src` attributes
+- Handles query parameters (e.g., `?v=2`)
+- Handles fragment identifiers (e.g., `#section`)
+
+**What it skips:**
+- External URLs (to avoid network dependency in tests)
+- `mailto:` links
+- Fragment-only anchors (`#top`)
+
+**Common failures:**
+- Typos in file paths
+- Case sensitivity issues (Linux/macOS difference)
+- Missing files in `slides/` directory
+
+**Fix strategy:**
+1. Check the reported path carefully
+2. Verify the file exists at that exact location
+3. Check for typos in `index.html`
+
+#### 3. Spell Checking (`npm run test:spell`)
+Checks spelling in HTML, Markdown, JavaScript, and CSS files using [CSpell](https://cspell.org/).
+
+**What it checks:**
+- Common English words (US spelling by default)
+- Technical terms in the built-in dictionary
+- Project-specific terms in [cspell/project-terms.txt](cspell/project-terms.txt)
+
+**Configuration**: [cspell.json](cspell.json)
+
+**Common failures:**
+- Typos in content or code comments
+- Technical jargon not in dictionary
+- British vs American spelling
+
+**Fix strategy:**
+1. Fix actual typos
+2. Add legitimate technical terms to `cspell/project-terms.txt`
+3. Add inline exceptions for one-off terms: `<!-- cspell:ignore technicalterm -->`
+
+**Adding project terms:**
+```bash
+# Add to cspell/project-terms.txt
+echo "MyTechnicalTerm" >> cspell/project-terms.txt
+```
+
+#### 4. Accessibility Auditing (`npm run test:a11y`)
+Runs automated accessibility tests using [Pa11y](https://pa11y.org/) with WCAG 2 AA standard.
+
+**What it checks:**
+- Color contrast ratios
+- Form labels
+- ARIA usage
+- Heading structure
+- Keyboard accessibility
+- Screen reader support
+
+**Requirements:**
+- Needs the presentation served via HTTP (not file://)
+- Start a local server: `python3 -m http.server 8000`
+- Run: `npm run test:a11y`
+
+**Configuration**: [.pa11yci.json](.pa11yci.json)
+
+**Common failures:**
+- Insufficient color contrast
+- Missing form labels
+- Empty links or buttons
+- Improper ARIA usage
+
+**Fix strategy:**
+1. Pa11y provides specific WCAG criteria violated
+2. Check [WCAG Quick Reference](https://www.w3.org/WAI/WCAG22/quickref/) for guidance
+3. Fix the issue, don't just hide it from the test
+
+**Important**: Automated tests catch ~30-40% of accessibility issues. Always do manual testing with:
+- Keyboard navigation
+- Screen reader (VoiceOver on macOS, NVDA on Windows)
+- Browser zoom (up to 200%)
+- Dark mode and light mode
+
+### Test-Driven Development Workflow
+
+#### Before Writing Content
+1. **Understand the requirement**: What slide are you adding? What's its purpose?
+2. **Write a test first** (if applicable):
+   - Will you add new technical terms? Add them to `cspell/project-terms.txt`
+   - Will you reference new files? Ensure they exist or create placeholders
+3. **Run tests to see them fail**: `npm test` should fail initially
+
+#### While Writing Content
+1. **Add your slide content** to `index.html`
+2. **Run tests frequently**: `npm test` after each slide or major change
+3. **Fix issues immediately**: Don't accumulate technical debt
+4. **Check manually**: Navigate with keyboard, test in dark mode
+
+#### Before Committing
+1. **Run full test suite**: `npm run test:all`
+2. **Manual accessibility check**:
+   - [ ] Tab through all interactive elements
+   - [ ] Test with screen reader
+   - [ ] Verify in dark mode
+   - [ ] Check responsive behavior
+3. **Fix all failures**: Zero tolerance for broken tests
+4. **Commit with descriptive message**: Mention what you added and that tests pass
+
+### Continuous Integration Readiness
+
+All tests are designed to run in CI/CD environments:
+
+```yaml
+# Example GitHub Actions workflow
+- name: Install dependencies
+  run: npm install
+  
+- name: Run tests
+  run: npm test
+```
+
+Tests are non-blocking by default (use `|| true`) to provide feedback without stopping the build. Modify this in `package.json` for stricter enforcement.
+
+### Adding New Tests
+
+When adding features to your presentation, consider adding tests:
+
+#### Example: Testing Custom JavaScript
+```javascript
+// test/custom-features.test.js
+const assert = require('assert');
+const fs = require('fs');
+
+describe('Custom Features', () => {
+  it('should have SeededSVG configuration', () => {
+    const html = fs.readFileSync('index.html', 'utf8');
+    assert(html.includes('window.SeededSVG'), 'Missing SeededSVG config');
+  });
+});
+```
+
+#### Example: Testing CSS Custom Properties
+```bash
+# scripts/test-css-vars.sh
+#!/usr/bin/env bash
+required_vars=("--slide-bg" "--slide-fg" "--link-fg")
+css_file="slides/slides.css"
+
+for var in "${required_vars[@]}"; do
+  if ! grep -q "$var" "$css_file"; then
+    echo "Missing required CSS variable: $var"
+    exit 1
+  fi
+done
+```
+
+### Performance Testing
+
+While not automated, consider manual performance checks:
+
+#### Lighthouse Audit
+```bash
+# Install lighthouse
+npm install -g lighthouse
+
+# Run audit
+lighthouse http://localhost:8000/index.html --view
+```
+
+**Target scores:**
+- Performance: 90+
+- Accessibility: 100
+- Best Practices: 90+
+- SEO: 80+
+
+#### File Size Budget
+Keep the presentation lightweight:
+- Total HTML + CSS + JS: < 500KB
+- Individual images: < 200KB
+- Consider WebP for images
+- Minimize external dependencies
+
+### Regression Testing
+
+When making changes to `slides/` framework:
+
+1. **Test existing presentations**: Ensure they still work
+2. **Test browser compatibility**: Chrome, Firefox, Safari, Edge
+3. **Test keyboard shortcuts**: F, P, C, arrows, Home, End
+4. **Test fullscreen mode**: Especially after `fullscreen-fix.js` changes
+5. **Test live captions**: If Whisper integration changed
+
 ### Before Presenting
 - [ ] Test keyboard navigation through all slides
 - [ ] Verify all links work

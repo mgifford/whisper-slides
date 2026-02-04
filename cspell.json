@@ -1,0 +1,72 @@
+{
+  "version": "0.2",
+  "language": "en-US",
+  "enableFiletypes": [
+    "markdown",
+    "mdx",
+    "html",
+    "css",
+    "scss",
+    "javascript",
+    "json",
+    "yaml",
+    "yml"
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    ".git/**",
+    "whisper.cpp/**",
+    "whisper-demo/**"
+  ],
+  "files": [
+    "**/*.{md,markdown,mdx,html,js,css}"
+  ],
+  "words": [
+    "WCAG",
+    "ATAG",
+    "APCA",
+    "Pa11y",
+    "axe",
+    "axecore",
+    "Whisper",
+    "ggerganov",
+    "GGML",
+    "transcription",
+    "transcriptions",
+    "livestream",
+    "livestreaming",
+    "livestreamed",
+    "captioning",
+    "captioners",
+    "SDL",
+    "CMake",
+    "cmake",
+    "b6plus",
+    "mgifford",
+    "seeded",
+    "SVGs",
+    "prefers",
+    "popover",
+    "popovers",
+    "Bluesky",
+    "Mastodon",
+    "LinkedIn",
+    "GitHub",
+    "perceivable",
+    "operable",
+    "aria",
+    "chokidar",
+    "frontmatter",
+    "htmlvalidate"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "whisper-slides-terms",
+      "path": "./cspell/project-terms.txt",
+      "addWords": true
+    }
+  ],
+  "dictionaries": [
+    "whisper-slides-terms"
+  ]
+}

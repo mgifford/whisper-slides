@@ -1,0 +1,19 @@
+{
+  "defaults": {
+    "timeout": 30000,
+    "standard": "WCAG2AA",
+    "runners": [
+      "axe"
+    ],
+    "chromeLaunchConfig": {
+      "args": [
+        "--no-sandbox",
+        "--disable-setuid-sandbox"
+      ]
+    }
+  },
+  "urls": [
+    "http://localhost:8000/index.html",
+    "file://${PWD}/index.html"
+  ]
+}

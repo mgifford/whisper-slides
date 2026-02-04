@@ -6,8 +6,13 @@
   "scripts": {
     "dev:whisper": "node scripts/run-whisper.js",
     "dev:transcript": "node scripts/whisper-transcript-watch.js",
+    "test:html": "html-validate -c .htmlvalidate.json '*.html'",
+    "test:a11y": "pa11y-ci --config .pa11yci.json || true",
     "test:links": "bash scripts/check-links.sh",
-    "test": "npm run test:links"
+    "test:spell": "cspell '**/*.{md,html,js,css}' || true",
+    "test:css": "bash scripts/validate-css.sh",
+    "test:all": "npm run test:html && npm run test:css && npm run test:links && npm run test:spell",
+    "test": "npm run test:all"
   },
   "repository": {
     "type": "git",
@@ -25,6 +30,10 @@
   "author": "Mike Gifford",
   "license": "AGPL-3.0",
   "devDependencies": {
-    "chokidar": "^4.0.3"
+    "chokidar": "^4.0.3",
+    "cspell": "^8.0.0",
+    "html-validate": "^8.0.0",
+    "pa11y": "^8.0.0",
+    "pa11y-ci": "^3.1.0"
   }
 }

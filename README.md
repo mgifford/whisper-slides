@@ -2,6 +2,8 @@
 
 An accessible HTML presentation template with real-time live captioning powered by [Whisper.cpp](https://github.com/ggerganov/whisper.cpp). This is a standalone, test-driven presentation you can use as a starting point for creating your own presentations with live transcription.
 
+The transcripts will only work when running locally, and not on GitHub Pages where this project is hosted. 
+
 ## ✨ Features
 
 - **Accessible HTML slides** using the [B6+ framework](https://www.w3.org/Talks/Tools/b6plus/)
@@ -103,16 +105,36 @@ whisper-slides/
 
 ## 🧪 Testing
 
+This project follows **test-driven development (TDD)** principles. All code changes should be validated with automated tests before committing.
+
 ```bash
-# Install dependencies first
+# Install test dependencies first
 npm install
 
-# Check for broken links
-npm run test:links
-
-# Run all quality checks
+# Run all tests (HTML validation, link checking, spell checking, CSS)
 npm test
+
+# Run individual test suites
+npm run test:html      # Validate HTML structure and accessibility
+npm run test:links     # Check for broken links
+npm run test:spell     # Spell check all content
+npm run test:css       # Validate CSS syntax
+npm run test:a11y      # Accessibility audit (requires local server)
 ```
+
+### Test Categories
+
+- **HTML Validation**: Checks semantic HTML, ARIA usage, and proper nesting
+- **Link Checking**: Verifies all local file references exist
+- **Spell Checking**: Validates spelling in content and code
+- **CSS Validation**: Checks for syntax errors and common issues
+- **Accessibility**: Automated WCAG 2 AA compliance checks
+
+See [AGENTS.md](AGENTS.md#testing--quality) for detailed testing guidance and TDD workflow.
+
+### Continuous Integration
+
+The project includes a GitHub Actions workflow ([.github/workflows/quality.yml](.github/workflows/quality.yml)) that runs all tests on every push and pull request.
 
 ## ⌨️ Keyboard Shortcuts
 
