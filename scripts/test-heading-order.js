@@ -15,7 +15,16 @@ function extractHeadings(html) {
   
   while ((match = headingRegex.exec(html)) !== null) {
     const level = parseInt(match[1]);
-    const text = match[2].replace(/<[^>]+>/g, '').trim();
+    // Note: This tag stripping is for display in console output only, not for
+    // HTML sanitization. The text is never inserted into HTML or used in a
+    // security-sensitive context.
+    const text = match[2]
+      .replace(/<[^>]*>/g, '')  // Remove all tags
+      .replace(/&lt;/g, '<')    // Decode common entities
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .trim();
     headings.push({ level, text });
   }
   
@@ -65,7 +74,7 @@ function testFile(filePath) {
     });
     return false;
   } else {
-    console.log('✓ Heading order is correct');
+    console.log('✅ Heading order is correct');
     return true;
   }
 }
