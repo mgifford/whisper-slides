@@ -9,10 +9,11 @@
     "test:html": "html-validate -c .htmlvalidate.json '*.html'",
     "test:a11y": "pa11y-ci --config .pa11yci.json || true",
     "test:headings": "node scripts/test-heading-order.js",
+    "test:main-landmark": "bash scripts/check-main-landmark.sh",
     "test:links": "bash scripts/check-links.sh",
     "test:spell": "cspell '**/*.{md,html,js,css}' || true",
     "test:css": "bash scripts/validate-css.sh",
-    "test:all": "npm run test:html && npm run test:headings && npm run test:css && npm run test:links && npm run test:spell",
+    "test:all": "npm run test:html && npm run test:css && npm run test:main-landmark && npm run test:links && npm run test:spell",
     "test": "npm run test:all"
   },
   "repository": {
