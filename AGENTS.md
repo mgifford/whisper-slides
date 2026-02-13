@@ -108,8 +108,8 @@ Only one notes block per slide:
 ### Required Elements
 Keep these in the `<body>` for proper presentation functionality:
 ```html
-<div class="progress"></div>
-<div class="clock"></div>
+<aside class="progress" aria-label="Presentation progress"></aside>
+<aside class="clock" aria-label="Presentation timer"></aside>
 <section aria-live="assertive" aria-label="Slide mode status">Leaving slide mode.</section>
 ```
 
