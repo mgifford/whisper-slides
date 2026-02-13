@@ -8,6 +8,7 @@
     "dev:transcript": "node scripts/whisper-transcript-watch.js",
     "test:html": "html-validate -c .htmlvalidate.json '*.html'",
     "test:a11y": "pa11y-ci --config .pa11yci.json || true",
+    "test:headings": "node scripts/test-heading-order.js",
     "test:landmarks": "bash scripts/test-landmarks.sh",
     "test:links": "bash scripts/check-links.sh",
     "test:spell": "cspell '**/*.{md,html,js,css}' || true",
