@@ -11,7 +11,7 @@
 node_modules/
 
 # Whisper output (generated locally)
-whisper-demo/transcript.json
+# transcript.json is committed for CI link checks; transcript.txt remains ignored
 whisper-demo/transcript.txt
 
 # Editor files
