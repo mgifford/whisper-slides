@@ -6,29 +6,32 @@ set -e
 
 echo "🔍 Checking for main landmark in index.html..."
 
-# Check if main element exists
-if ! grep -q "<main>" index.html; then
+# Count the number of opening main tags
+MAIN_OPEN_COUNT=$(grep -c "<main>" index.html || true)
+
+# Count the number of closing main tags
+MAIN_CLOSE_COUNT=$(grep -c "</main>" index.html || true)
+
+if [ "$MAIN_OPEN_COUNT" -eq 0 ]; then
   echo "❌ FAIL: No <main> element found in index.html"
   exit 1
-fi
-
-# Count the number of main elements
-MAIN_COUNT=$(grep -c "<main>" index.html || true)
-
-if [ "$MAIN_COUNT" -eq 0 ]; then
-  echo "❌ FAIL: No <main> element found"
-  exit 1
-elif [ "$MAIN_COUNT" -gt 1 ]; then
-  echo "❌ FAIL: Multiple <main> elements found ($MAIN_COUNT)"
-  exit 1
-else
-  echo "✅ PASS: Exactly one <main> landmark found"
-fi
-
-# Verify closing tag exists
-if ! grep -q "</main>" index.html; then
-  echo "❌ FAIL: No </main> closing tag found"
+elif [ "$MAIN_OPEN_COUNT" -gt 1 ]; then
+  echo "❌ FAIL: Multiple <main> opening tags found ($MAIN_OPEN_COUNT)"
   exit 1
 fi
 
+if [ "$MAIN_CLOSE_COUNT" -eq 0 ]; then
+  echo "❌ FAIL: No </main> closing tag found in index.html"
+  exit 1
+elif [ "$MAIN_CLOSE_COUNT" -gt 1 ]; then
+  echo "❌ FAIL: Multiple </main> closing tags found ($MAIN_CLOSE_COUNT)"
+  exit 1
+fi
+
+if [ "$MAIN_OPEN_COUNT" -ne "$MAIN_CLOSE_COUNT" ]; then
+  echo "❌ FAIL: Mismatched <main> tags (opening: $MAIN_OPEN_COUNT, closing: $MAIN_CLOSE_COUNT)"
+  exit 1
+fi
+
+echo "✅ PASS: Exactly one <main> landmark found with matching opening and closing tags"
 echo "✅ Main landmark test passed!"
