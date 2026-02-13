@@ -281,24 +281,33 @@
     try {
       const res = await fetch('whisper-demo/transcript.json', { cache: 'no-store' });
       if (res.ok) {
-        // Check if file was recently modified (within last 10 seconds)
-        const lastModified = res.headers.get('Last-Modified');
+        const data = await res.json().catch(() => null);
         let isActive = false;
-        
-        if (lastModified) {
-          const modifiedDate = new Date(lastModified);
-          const now = new Date();
-          const secondsSinceUpdate = (now - modifiedDate) / 1000;
-          isActive = secondsSinceUpdate < 10; // File updated in last 10 seconds
-          console.log('[Captions] Fetch successful - Age:', Math.round(secondsSinceUpdate), 's | Active:', isActive);
+
+        // Prefer an explicit active flag from the producer
+        if (data && data.active === true) {
+          isActive = true;
+        } else if (data && data.generated) {
+          const t = Date.parse(data.generated);
+          if (!Number.isNaN(t)) {
+            const secondsSince = (Date.now() - t) / 1000;
+            isActive = secondsSince < 10; // recent within 10s
+            console.log('[Captions] Data generated age:', Math.round(secondsSince), 's | Active:', isActive);
+          }
+        } else {
+          // Fallback: last-modified header as a hint
+          const lastModified = res.headers.get('Last-Modified');
+          if (lastModified) {
+            const modifiedDate = new Date(lastModified);
+            const secondsSinceUpdate = (Date.now() - modifiedDate) / 1000;
+            isActive = secondsSinceUpdate < 10;
+            console.log('[Captions] Last-Modified age hint:', Math.round(secondsSinceUpdate), 's | Active:', isActive);
+          }
         }
-        
-        const data = await res.json();
-        console.log('[Captions] Data received, length:', data.text?.length || 0);
-        // Button shows active status based on file modification time
+
+        console.log('[Captions] Data received, text length:', data?.text?.length || 0);
         updateCaptionButton(isActive);
-        // But always show the latest transcript text (even if slightly old)
-        updateLiveTranscript(data.text);
+        updateLiveTranscript(data?.text || '');
       } else {
         console.log('[Captions] Fetch failed:', res.status);
         updateCaptionButton(false);

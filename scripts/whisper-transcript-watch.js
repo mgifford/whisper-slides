@@ -35,14 +35,15 @@ function toJsonPayload(srcPath, content) {
   if (ext === '.json') {
     try {
       const obj = JSON.parse(content);
-      if (typeof obj === 'string') return { text: obj, updatedAt: new Date().toISOString() };
-      if (obj && typeof obj.text === 'string') return { text: obj.text, updatedAt: new Date().toISOString() };
-      return { text: JSON.stringify(obj), updatedAt: new Date().toISOString() };
+      if (typeof obj === 'string') return { active: true, generated: new Date().toISOString(), text: obj };
+      if (obj && typeof obj.text === 'string') return { active: true, generated: new Date().toISOString(), text: obj.text };
+      // If already an object, try to preserve structure but still include active/generation
+      return { active: true, generated: new Date().toISOString(), text: typeof obj === 'object' ? JSON.stringify(obj) : String(obj) };
     } catch {
       // fall through to txt
     }
   }
-  return { text: content, updatedAt: new Date().toISOString() };
+  return { active: true, generated: new Date().toISOString(), text: content };
 }
 
 function writeOut(dst, payload) {
