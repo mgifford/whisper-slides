@@ -60,7 +60,15 @@
       async function check() {
         try {
           const res = await fetch(url, { cache: 'no-store' });
-          render(res.ok);
+          if (!res.ok) { render(false); return; }
+          const data = await res.json().catch(() => null);
+          // Prefer an explicit flag; otherwise check generated timestamp recency
+          if (data && data.active === true) { render(true); return; }
+          if (data && data.generated) {
+            const t = Date.parse(data.generated);
+            if (!Number.isNaN(t) && (Date.now() - t) < 5000) { render(true); return; }
+          }
+          render(false);
         } catch {
           render(false);
         }

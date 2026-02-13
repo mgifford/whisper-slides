@@ -123,7 +123,7 @@ async function main() {
 
   let transcript = '';
   const writeOut = debounce(() => {
-    const payload = { text: transcript.trim(), updatedAt: new Date().toISOString() };
+    const payload = { active: true, generated: new Date().toISOString(), text: transcript.trim() };
     try {
       fs.writeFileSync(outFile, JSON.stringify(payload, null, 2));
     } catch (e) {
@@ -155,14 +155,25 @@ async function main() {
 
   const shutdown = () => {
     try { child.kill('SIGINT'); } catch {}
-    writeOut();
+    // write a final 'inactive' payload so UIs know listener stopped
+    try {
+      const final = { active: false, generated: new Date().toISOString(), text: transcript.trim() };
+      fs.writeFileSync(outFile, JSON.stringify(final, null, 2));
+    } catch (e) {
+      // ignore
+    }
     setTimeout(() => process.exit(0), 250);
   };
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
 
   child.on('exit', (code) => {
-    writeOut();
+    try {
+      const final = { active: false, generated: new Date().toISOString(), text: transcript.trim() };
+      fs.writeFileSync(outFile, JSON.stringify(final, null, 2));
+    } catch (e) {
+      // ignore
+    }
     console.log(`\n[run-whisper] whisper-stream exited with code ${code}`);
     process.exit(code || 0);
   });
