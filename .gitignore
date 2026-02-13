@@ -9,7 +9,6 @@
 
 # Node
 node_modules/
-package-lock.json
 
 # Whisper output (generated locally)
 whisper-demo/transcript.json
