@@ -1,2 +1,12 @@
 # Project-specific terms for spell checking
 # Add custom terms here that are valid in this project context
+Copilot
+WASM
+WebAssembly
+Gerganov
+Whisper
+whisper
+LLMs
+LLM
+on-device
+microphone
