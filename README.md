@@ -159,6 +159,24 @@ The project includes a GitHub Actions workflow ([.github/workflows/quality.yml](
 - `npm run dev:transcript` - Mirror a text file to JSON for testing
 - `npm test` - Run all quality checks
 
+## 🤖 AI Disclosure
+
+This project is committed to transparency about AI use. The following AI tools have been used in this project.
+
+### GitHub Copilot
+
+**Provider**: GitHub / Microsoft  
+**Used during development**: Yes. GitHub Copilot (powered by large language models) was used as a coding assistant to help write code, scripts, documentation, and configuration files in this repository.  
+**Used at runtime**: No. GitHub Copilot is a developer tool only; it does not run when users view or use the presentation.  
+**Browser-based AI**: No.
+
+### OpenAI Whisper (via Whisper.cpp)
+
+**Provider**: OpenAI (model); Georgi Gerganov (Whisper.cpp C++ port)  
+**Used during development**: No. Whisper itself was not used as a development assistant.  
+**Used at runtime**: Yes. When live captioning is enabled, the Whisper speech recognition model runs **locally** on your machine via [Whisper.cpp](https://github.com/ggerganov/whisper.cpp). It transcribes microphone audio to text in real time and writes the output to `whisper-demo/transcript.json`. This is an on-device AI feature — no data is sent to external servers.  
+**Browser-based AI**: Optional. The `whisper-demo/` directory can host a WebAssembly (WASM) build of Whisper.cpp, which runs the speech recognition model entirely in the browser. This is not enabled by default; see `whisper-demo/index.html` for setup instructions.
+
 ## 📝 License
 
 This template is released under the [GNU AGPLv3](LICENSE) license.

@@ -483,6 +483,17 @@ presentation-name/
 - [Whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 - [Accessible Presentations](https://www.w3.org/WAI/teach-advocate/accessible-presentations/)
 
+## AI Disclosure
+
+Transparency about AI use is a core value of this project. When contributing:
+
+- **If you use an AI tool to write or generate any part of a contribution** (code, documentation, slides, scripts, or configuration), add or update the `## 🤖 AI Disclosure` section in `README.md`.
+- List the AI tool name, version or provider where known, and a brief description of how it was used.
+- Do not list AI tools that were not actually used.
+- Each listed LLM or AI tool should describe: (1) how it was used during development, (2) whether it runs when the project is in use, and (3) whether any browser-based AI is enabled.
+
+See the [AI Disclosure section in README.md](README.md#-ai-disclosure) for the current disclosure.
+
 ## Change Review Checklist
 - [ ] Slide structure validated (proper `<section>` elements)
 - [ ] Headings in sequential order
@@ -493,3 +504,4 @@ presentation-name/
 - [ ] Keyboard navigation tested
 - [ ] Speaker notes don't duplicate visible content
 - [ ] Link checker passes: `npm run test:links`
+- [ ] AI Disclosure updated in `README.md` if any AI tools were used
