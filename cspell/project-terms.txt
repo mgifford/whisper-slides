@@ -10,3 +10,11 @@ LLMs
 LLM
 on-device
 microphone
+darkmode
+libsdl
+DWHISPER
+xlarge
+slidechange
+afterbegin
+lightmode
+hidemouse

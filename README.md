@@ -13,6 +13,8 @@ The transcripts will only work when running locally, and not on GitHub Pages whe
 - **Keyboard navigation** - full presentation control without a mouse
 - **Responsive design** - works on desktop and mobile devices
 
+See [FEATURES.md](FEATURES.md) for exhaustive documentation of all features, including accessibility details, the presenter/audience view, Whisper integration, and customization options.
+
 > **⚠️ Important**: Live captioning with Whisper.cpp only works when running locally on your machine. It **will not work** on GitHub Pages or other static hosting because it requires a local server process with microphone access. The presentation slides themselves work fine on GitHub Pages, but without live captions.
 
 ## 🚀 Quick Start
@@ -166,7 +168,7 @@ This project is committed to transparency about AI use. The following AI tools h
 ### GitHub Copilot
 
 **Provider**: GitHub / Microsoft  
-**Used during development**: Yes. GitHub Copilot (powered by large language models) was used as a coding assistant to help write code, scripts, documentation, and configuration files in this repository.  
+**Used during development**: Yes. GitHub Copilot (powered by large language models) was used as a coding assistant to help write code, scripts, documentation, and configuration files in this repository, including the [FEATURES.md](FEATURES.md) feature reference.  
 **Used at runtime**: No. GitHub Copilot is a developer tool only; it does not run when users view or use the presentation.  
 **Browser-based AI**: No.
 
