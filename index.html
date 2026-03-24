@@ -107,6 +107,25 @@
     </div>
   </section>
 
+  <!-- Slide: GitHub Pages Alternatives -->
+  <section class="slide" id="alternatives" aria-label="GitHub Pages Alternatives">
+    <h2>GitHub Pages Alternatives</h2>
+    <p>Whisper.cpp needs a local binary. For static hosting, consider these options:</p>
+    <ul>
+      <li><strong>Web Speech API</strong> — built into Chrome and Edge; no install needed; works on GitHub Pages</li>
+      <li><strong>Whisper WASM</strong> — runs Whisper entirely in the browser; no server required</li>
+      <li><strong>VibeVoice</strong> — browser-based voice transcription; see <a href="https://github.com/mgifford/whisper-slides/issues/1">VibeVoice discussion (issue #1)</a></li>
+      <li><strong>Cloud APIs</strong> — OpenAI Whisper API, Azure Speech, or AssemblyAI via a small proxy</li>
+    </ul>
+    <div class="notes" hidden>
+      <p>The Web Speech API (SpeechRecognition) is the easiest path for GitHub Pages: it runs entirely in the browser using the browser's built-in engine, requires no installation, and works over HTTPS. Chrome and Edge support it; Firefox does not.</p>
+      <p>Whisper WASM loads the Whisper model into the browser via WebAssembly. The <code>whisper-demo/</code> directory has a placeholder for this approach. It needs a CORS-enabled HTTP server to serve the large model file.</p>
+      <p>VibeVoice is a browser-first voice-notes tool that may be adaptable for live captioning. It has not been tested with this project; see issue #1 for discussion.</p>
+      <p>Cloud speech APIs (OpenAI Whisper API, Azure Cognitive Services Speech, AssemblyAI) offer high accuracy and work anywhere, but require an API key and a small server-side proxy to keep the key secret.</p>
+      <p>See README.md for a full comparison table of all alternatives.</p>
+    </div>
+  </section>
+
   <!-- Slide 3: Demo Iframe -->
   <section class="slide" id="demo-iframe" aria-label="Demo Iframe">
     <h2>Demo Iframe</h2>

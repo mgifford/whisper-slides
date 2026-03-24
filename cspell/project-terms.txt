@@ -18,3 +18,9 @@ slidechange
 afterbegin
 lightmode
 hidemouse
+VibeVoice
+AssemblyAI
+SpeechRecognition
+SharedArrayBuffer
+Cloudflare
+ggerganov
