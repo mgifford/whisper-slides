@@ -24,3 +24,7 @@ SpeechRecognition
 SharedArrayBuffer
 Cloudflare
 ggerganov
+webkitSpeechRecognition
+WebSpeechCaptions
+webspeech
+interimResults
