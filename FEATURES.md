@@ -34,6 +34,7 @@ Complete documentation for the Whisper Live Captioning Presentation Template.
    - [Offline Indicator](#offline-indicator)
 5. [Whisper Integration](#whisper-integration)
    - [How It Works](#how-it-works)
+   - [GitHub Pages / Cloud Alternatives](#github-pages--cloud-alternatives)
    - [Setup Guide](#setup-guide)
    - [Running the Caption System](#running-the-caption-system)
    - [Caption Display](#caption-display)
@@ -443,6 +444,63 @@ The JSON file format is:
 > `whisper-stream` is a native binary that reads from the microphone and writes
 > to the local filesystem. Static hosting platforms (GitHub Pages, Netlify,
 > etc.) cannot run native binaries or provide filesystem access.
+
+### GitHub Pages / Cloud Alternatives
+
+If you need live captions on GitHub Pages or another static host, these options
+avoid the need for a local binary:
+
+| Option | How it works | Static hosting? | Quality | Setup |
+|--------|-------------|-----------------|---------|-------|
+| **Web Speech API** | Browser built-in (Chrome/Edge) | ✅ Yes | Good | None |
+| **Whisper WASM** | Whisper in WebAssembly, runs in browser | ✅ Yes (HTTPS + CORS) | High | Medium |
+| **VibeVoice** | Browser-based voice transcription | ✅ Yes | Untested | Low |
+| **Cloud API proxy** | OpenAI / Azure / AssemblyAI + proxy | ⚠️ Needs proxy | High | Medium–High |
+
+#### Web Speech API
+
+The [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
+(`SpeechRecognition`) is built into Chrome and Edge. It requires no install,
+works over HTTPS, and is compatible with static hosting including GitHub Pages.
+Because the API exposes transcript text directly to JavaScript, the output can
+be formatted to match the `whisper-demo/transcript.json` schema so the existing
+caption display picks it up without any other changes to the presentation.
+Firefox does not support `SpeechRecognition` natively.
+
+#### Whisper WASM
+
+The `whisper-demo/` directory has a placeholder for a
+[WebAssembly build of Whisper.cpp](https://whisper.ggerganov.com). The model
+runs entirely in the browser: no audio is sent to any server. Requirements:
+
+- HTTPS origin (GitHub Pages qualifies).
+- The model file (75 MB – 1.5 GB depending on model) must be served from the
+  same origin or a CORS-enabled origin.
+- WebAssembly + SharedArrayBuffer support (check
+  [MDN compatibility tables](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#browser_compatibility)
+  for current minimum versions).
+
+#### VibeVoice
+
+[VibeVoice](https://github.com/mgifford/whisper-slides/issues/1) is a
+browser-first voice-transcription tool that has been mentioned as a candidate
+for static-hosting captioning. It has not been tested with this project; see
+[issue #1](https://github.com/mgifford/whisper-slides/issues/1) for discussion.
+
+#### Cloud Speech API Proxy
+
+Services such as the [OpenAI Whisper API](https://platform.openai.com/docs/guides/speech-to-text),
+[Azure Cognitive Services Speech](https://azure.microsoft.com/en-us/products/ai-services/speech-to-text),
+and [AssemblyAI](https://www.assemblyai.com/) offer high-accuracy cloud
+transcription. Key considerations:
+
+- **API key security**: Never expose API keys in client-side JavaScript or
+  commit them to a public repository.
+- **Proxy required**: A small server-side proxy (Cloudflare Worker, Vercel Edge
+  Function, or a Node.js server) forwards audio to the API and writes the JSON
+  transcript to a public endpoint.
+- The presentation polls that endpoint the same way it polls
+  `whisper-demo/transcript.json` today — no changes to the browser code needed.
 
 ### Setup Guide
 
