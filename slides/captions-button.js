@@ -1,15 +1,16 @@
 /**
  * Captions Button Extension for b6plus
- * 
+ *
  * Adds a caption status button to the b6-ui menu bar that:
- * - Polls whisper-demo/transcript.json every 2 seconds
- * - Shows green circle (🟢) when Whisper is running
- * - Shows grey circle (⏺) when Whisper is not running  
- * - Opens a modal with presentation instructions on click
- * 
+ * - Polls whisper-demo/transcript.json every 2 seconds (Whisper.cpp path)
+ * - Reflects Web Speech API state when webspeech-captions.js is loaded
+ * - Shows green circle (🟢) when any caption source is active
+ * - Shows grey circle (⏺) when no caption source is running
+ * - Opens a modal with setup / control instructions on click
+ *
  * Load this script after b6plus.js:
- * <script src="ca-slides/b6plus.js"></script>
- * <script src="ca-slides/captions-button.js"></script>
+ * <script src="slides/b6plus.js"></script>
+ * <script src="slides/captions-button.js"></script>
  */
 
 (function() {
@@ -32,6 +33,15 @@
     
     // Always start polling for captions and element persistence
     startPolling();
+
+    // React immediately to Web Speech API state changes
+    document.addEventListener('webspeech-status', function (e) {
+      var active = e.detail && e.detail.active;
+      updateCaptionButton(active);
+      if (e.detail && e.detail.error === 'permission-denied') {
+        console.warn('[Captions] Web Speech microphone permission denied.');
+      }
+    });
     
     // Debug: Check element state every 2 seconds
     setInterval(() => {
@@ -182,19 +192,50 @@
       };
       
       const dialog = document.createElement('div');
-      dialog.style.cssText = 'background: var(--slide-bg, #fff); color: var(--slide-fg, #000); padding: 2em; border-radius: 8px; max-width: 600px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);';
+      dialog.style.cssText = 'background: var(--slide-bg, #fff); color: var(--slide-fg, #000); padding: 2em; border-radius: 8px; max-width: 600px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); overflow-y: auto; max-height: 90vh;';
       
       // Check if captions are currently running
       const isRunning = document.querySelector('.b6-captionbutton .caption-indicator')?.textContent === '🟢';
-      
-      if (isRunning) {
-        // Show presentation usage instructions
-        dialog.innerHTML = '<h2 style="margin-top: 0;">Using Live Captions</h2>' +
+      const webSpeech = window.WebSpeechCaptions || null;
+      const webSpeechSupported = webSpeech && webSpeech.isSupported;
+      const webSpeechActive = webSpeech && webSpeech.isActive;
+
+      // Build Web Speech section
+      const codeStyle = 'background: var(--code-bg, #f0f0f0); padding: 2px 6px; border-radius: 3px;';
+      const btnStyle = 'margin-top: 1em; padding: 0.5em 1.5em; border: none; border-radius: 4px; cursor: pointer; font-size: 1em;';
+
+      let webSpeechSection;
+      if (!webSpeechSupported) {
+        webSpeechSection =
+          '<section>' +
+          '<h3 style="margin-top: 1.5em;">Web Speech API</h3>' +
+          '<p>Not supported in this browser. Use Chrome or Edge for browser-based speech recognition with no local setup required.</p>' +
+          '</section>';
+      } else if (webSpeechActive) {
+        webSpeechSection =
+          '<section>' +
+          '<h3 style="margin-top: 1.5em;">Web Speech API (Active ✅)</h3>' +
+          '<p>Your browser is capturing speech and showing live captions below the slides.</p>' +
+          '<button id="b6-webspeech-toggle" style="' + btnStyle + 'background: #c00; color: #fff;">Stop Web Speech</button>' +
+          '</section>';
+      } else {
+        webSpeechSection =
+          '<section>' +
+          '<h3 style="margin-top: 1.5em;">Web Speech API (Available)</h3>' +
+          '<p>Your browser supports the Web Speech API. Click below to start live captions — no installation required. Works on GitHub Pages over HTTPS.</p>' +
+          '<button id="b6-webspeech-toggle" style="' + btnStyle + 'background: #005EA2; color: #fff;">Start Web Speech Captions</button>' +
+          '</section>';
+      }
+
+      if (isRunning && !webSpeechActive) {
+        // Whisper is running — show usage instructions
+        dialog.innerHTML =
+          '<h2 style="margin-top: 0;">Using Live Captions</h2>' +
           '<p>Whisper is currently running and capturing your speech. The live transcript appears at the bottom of the slides as you speak.</p>' +
           '<h3 style="margin-top: 1.5em;">Keyboard Controls:</h3>' +
           '<ul style="line-height: 1.7;">' +
-          '<li><kbd>=</kbd> or <kbd>+</kbd> - Increase caption text size</li>' +
-          '<li><kbd>-</kbd> - Decrease caption text size</li>' +
+          '<li><kbd>=</kbd> or <kbd>+</kbd> — Increase caption text size</li>' +
+          '<li><kbd>-</kbd> — Decrease caption text size</li>' +
           '<li>Text persists between slides so viewers can finish reading</li>' +
           '</ul>' +
           '<h3 style="margin-top: 1.5em;">Tips for Best Results:</h3>' +
@@ -203,25 +244,49 @@
           '<li>Reduce background noise when possible</li>' +
           '<li>The transcript updates every 2 seconds</li>' +
           '</ul>' +
-          '<button style="margin-top: 1.5em; padding: 0.5em 1.5em; background: #005EA2; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Close</button>';
+          webSpeechSection +
+          '<button id="b6-close-caption-help" style="margin-top: 1.5em; padding: 0.5em 1.5em; background: #005EA2; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Close</button>';
       } else {
-        // Show setup instructions
-        dialog.innerHTML = '<h2 style="margin-top: 0;">Live Caption Setup</h2>' +
+        // Captions off — show setup options
+        dialog.innerHTML =
+          '<h2 style="margin-top: 0;">Live Caption Options</h2>' +
+          webSpeechSection +
+          '<section>' +
+          '<h3 style="margin-top: 1.5em;">Whisper.cpp (Local Only)</h3>' +
           '<p><strong>⚠️ Local Use Only:</strong> This feature works only when running presentations locally on your machine. It will not work on deployed sites.</p>' +
           '<p>To enable live captions powered by Whisper.cpp:</p>' +
           '<ol style="line-height: 1.7;">' +
-          '<li>Install SDL2: <code style="background: var(--code-bg, #f0f0f0); padding: 2px 6px; border-radius: 3px;">brew install sdl2</code></li>' +
+          '<li>Install SDL2: <code style="' + codeStyle + '">brew install sdl2</code></li>' +
           '<li>Build whisper.cpp in the presentations directory (see README)</li>' +
           '<li>Download a Whisper model (e.g., base.en)</li>' +
-          '<li>Run <code style="background: var(--code-bg, #f0f0f0); padding: 2px 6px; border-radius: 3px;">npm run dev:whisper</code> from the project root</li>' +
+          '<li>Run <code style="' + codeStyle + '">npm run dev:whisper</code> from the project root</li>' +
           '</ol>' +
-          '<p>When active, this button will show a green indicator (🟢).</p>' +
-          '<p style="margin-top: 1.5em;"><a href="/presentations/README-whisper.html" target="_blank" style="color: #005EA2; text-decoration: underline;">→ View detailed setup instructions</a></p>' +
-          '<button style="margin-top: 1.5em; padding: 0.5em 1.5em; background: #005EA2; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Close</button>';
+          '</section>' +
+          '<button id="b6-close-caption-help" style="margin-top: 1.5em; padding: 0.5em 1.5em; background: #005EA2; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Close</button>';
       }
       
-      const closeBtn = dialog.querySelector('button');
-      closeBtn.onclick = () => overlay.remove();
+      const closeBtn = dialog.querySelector('#b6-close-caption-help');
+      if (closeBtn) closeBtn.onclick = () => overlay.remove();
+
+      // Wire up the Web Speech toggle button if present
+      const wsToggle = dialog.querySelector('#b6-webspeech-toggle');
+      if (wsToggle && webSpeech) {
+        wsToggle.onclick = () => {
+          if (webSpeech.isActive) {
+            overlay.remove();
+            webSpeech.stop();
+          } else {
+            const started = webSpeech.start();
+            if (started === false) {
+              // start() returned false synchronously — not supported or already failed
+              wsToggle.textContent = 'Could not start — check browser support';
+              wsToggle.disabled = true;
+            } else {
+              overlay.remove();
+            }
+          }
+        };
+      }
       
       overlay.appendChild(dialog);
       document.body.appendChild(overlay);
@@ -232,10 +297,12 @@
 
   function updateCaptionButton(running) {
     const buttons = document.querySelectorAll('.b6-captionbutton');
+    const webSpeechActive = window.WebSpeechCaptions && window.WebSpeechCaptions.isActive;
     buttons.forEach(button => {
       const indicator = button.querySelector('.caption-indicator');
       if (running) {
-        button.setAttribute('title', 'Captions On: Whisper transcript available');
+        const source = webSpeechActive ? 'Web Speech API active' : 'Whisper transcript available';
+        button.setAttribute('title', 'Captions On: ' + source);
         if (indicator) indicator.textContent = '🟢';
       } else {
         button.setAttribute('title', 'Captions Off: Click for help');
@@ -278,6 +345,13 @@
   }
 
   async function checkCaptions() {
+    // If Web Speech API is currently active, it owns the caption display;
+    // skip the Whisper JSON poll to avoid overwriting the live transcript.
+    if (window.WebSpeechCaptions && window.WebSpeechCaptions.isActive) {
+      updateCaptionButton(true);
+      return;
+    }
+
     try {
       const res = await fetch('whisper-demo/transcript.json', { cache: 'no-store' });
       if (res.ok) {

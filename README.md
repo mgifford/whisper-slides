@@ -30,7 +30,16 @@ If you need live captioning on GitHub Pages or another static host, several alte
 
 ### Web Speech API
 
-The [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) (`SpeechRecognition`) is built into Chrome and Edge. It requires no installation, runs over HTTPS, and works on GitHub Pages. Firefox does not support it natively. Because the API exposes transcript text directly to JavaScript, it can be formatted to match the `whisper-demo/transcript.json` schema and served to the existing caption display. Accuracy varies by browser engine.
+The [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) (`SpeechRecognition`) is built into Chrome and Edge. It requires no installation, runs over HTTPS, and works on GitHub Pages. Firefox does not support it natively.
+
+**How to use:**
+
+1. Open the presentation in Chrome or Edge.
+2. Click the **captions** button in the toolbar.
+3. Choose **Start Web Speech Captions** in the dialog.
+4. Allow microphone access when prompted — transcription begins immediately.
+
+The integration (`slides/webspeech-captions.js`) uses continuous recognition with interim results so words appear in real time. When Web Speech is active, the Whisper JSON poll is paused so the two sources do not conflict. Accuracy depends on the browser's built-in speech engine.
 
 ### Whisper WASM (Browser-Based)
 
@@ -203,9 +212,16 @@ This project is committed to transparency about AI use. The following AI tools h
 ### GitHub Copilot
 
 **Provider**: GitHub / Microsoft  
-**Used during development**: Yes. GitHub Copilot (powered by large language models) was used as a coding assistant to help write code, scripts, documentation, and configuration files in this repository, including the [FEATURES.md](FEATURES.md) feature reference.  
+**Used during development**: Yes. GitHub Copilot (powered by large language models) was used as a coding assistant to help write code, scripts, documentation, and configuration files in this repository, including the [FEATURES.md](FEATURES.md) feature reference and the Web Speech API integration (`slides/webspeech-captions.js`).  
 **Used at runtime**: No. GitHub Copilot is a developer tool only; it does not run when users view or use the presentation.  
 **Browser-based AI**: No.
+
+### Browser Web Speech API
+
+**Provider**: Google (Chrome engine); Microsoft (Edge engine)  
+**Used during development**: No.  
+**Used at runtime**: Yes, when the user clicks **Start Web Speech Captions** in the captions button dialog. The browser's built-in `SpeechRecognition` API captures microphone audio and returns transcript text in real time. All processing happens inside the browser — no audio is sent to the project's servers. This feature requires Chrome or Edge; Firefox does not support `SpeechRecognition`.  
+**Browser-based AI**: Yes — the speech-to-text model runs inside the browser engine.
 
 ### OpenAI Whisper (via Whisper.cpp)
 

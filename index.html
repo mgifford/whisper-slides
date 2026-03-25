@@ -8,6 +8,7 @@
   <script src="slides/b6plus.js"></script>
   <script src="slides/fullscreen-fix.js"></script>
   <script src="slides/captions-button.js?v=2"></script>
+  <script src="slides/webspeech-captions.js"></script>
   <script src="slides/offline-indicator.js"></script>
   <script src="slides/footer-overlap-detector.js"></script>
   <script>
@@ -123,6 +124,21 @@
       <p>VibeVoice is a browser-first voice-notes tool that may be adaptable for live captioning. It has not been tested with this project; see issue #1 for discussion.</p>
       <p>Cloud speech APIs (OpenAI Whisper API, Azure Cognitive Services Speech, AssemblyAI) offer high accuracy and work anywhere, but require an API key and a small server-side proxy to keep the key secret.</p>
       <p>See README.md for a full comparison table of all alternatives.</p>
+    </div>
+  </section>
+
+  <!-- Slide: Web Speech API -->
+  <section class="slide" id="web-speech-api" aria-label="Web Speech API">
+    <h2>Web Speech API</h2>
+    <ul>
+      <li>Built into Chrome and Edge — no install or local server needed</li>
+      <li>Works on GitHub Pages and any HTTPS-hosted site</li>
+      <li>Click the <strong>captions</strong> button in the toolbar and choose <em>Start Web Speech Captions</em></li>
+      <li>Your browser will ask for microphone permission, then begin transcribing in real time</li>
+      <li>Firefox does not support <code>SpeechRecognition</code>; use Chrome or Edge</li>
+    </ul>
+    <div class="notes" hidden>
+      <p>The Web Speech API integration (slides/webspeech-captions.js) uses window.SpeechRecognition (or webkitSpeechRecognition for older Chrome). It enables continuous, interim-results mode so words appear as you speak. The final text buffer keeps the last ~30 words visible. When Web Speech is active the Whisper JSON poll is paused so the two sources do not conflict.</p>
     </div>
   </section>
 
