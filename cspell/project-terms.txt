@@ -28,3 +28,6 @@ webkitSpeechRecognition
 WebSpeechCaptions
 webspeech
 interimResults
+captionbutton
+Georgi
+Gifford
