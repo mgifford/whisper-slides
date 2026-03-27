@@ -44,17 +44,22 @@ Complete documentation for the Whisper Live Captioning Presentation Template.
    - [Transcript Polling](#transcript-polling)
    - [Text Size Controls](#text-size-controls)
    - [Browser-Based (WebAssembly) Mode](#browser-based-webassembly-mode)
-6. [Supporting Features](#supporting-features)
+6. [Web Speech API Captions](#web-speech-api-captions)
+   - [How Web Speech Works](#how-web-speech-works)
+   - [Public API](#public-api)
+   - [Behavior Details](#behavior-details)
+   - [Integration with the Caption Button](#integration-with-the-caption-button)
+7. [Supporting Features](#supporting-features)
    - [Fullscreen Fix](#fullscreen-fix)
    - [Footer Overlap Detector](#footer-overlap-detector)
    - [Seeded SVG Backgrounds](#seeded-svg-backgrounds)
-7. [Theming and Customization](#theming-and-customization)
+8. [Theming and Customization](#theming-and-customization)
    - [CSS Custom Properties](#css-custom-properties)
    - [Body Classes and Configuration](#body-classes-and-configuration)
    - [Presentation Timer](#presentation-timer)
-8. [Testing and Quality](#testing-and-quality)
-9. [Project Structure](#project-structure)
-10. [Environment Variables and NPM Scripts](#environment-variables-and-npm-scripts)
+9. [Testing and Quality](#testing-and-quality)
+10. [Project Structure](#project-structure)
+11. [Environment Variables and NPM Scripts](#environment-variables-and-npm-scripts)
 
 ---
 
@@ -511,8 +516,15 @@ Additional options if you need higher accuracy or different browser support:
 
 #### Web Speech API
 
-See the [Web Speech API (Browser)](#web-speech-api-browser) section above —
-this is already implemented in `slides/webspeech-captions.js`.
+The [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
+(`SpeechRecognition`) is built into Chrome and Edge. It requires no install,
+works over HTTPS, and is compatible with static hosting including GitHub Pages.
+The project includes a ready-to-use integration (`slides/webspeech-captions.js`)
+that writes transcript text directly to the `.live-caption-display` element and
+dispatches `webspeech-status` events so the caption button updates automatically.
+While Web Speech is active, the Whisper JSON poll is paused to prevent the two
+sources from conflicting.
+Firefox does not support `SpeechRecognition` natively.
 
 #### Whisper WASM
 
@@ -661,14 +673,19 @@ The caption button appears in the B6+ UI bar at the top of the page.
 
 | State | Indicator | Tooltip |
 |-------|-----------|---------|
+| Web Speech API active | 🟢 green circle | "Captions On: Web Speech API active" |
 | Whisper running | 🟢 green circle | "Captions On: Whisper transcript available" |
-| Whisper not running | ⏺ grey circle | "Captions Off: Click for help" |
+| No caption source active | ⏺ grey circle | "Captions Off: Click for help" |
 
 Clicking the button opens a modal dialog:
 
-- **When Whisper is running:** Shows keyboard shortcuts for caption control and
-  tips for best captioning results.
-- **When Whisper is not running:** Shows step-by-step setup instructions.
+- **When Whisper is running (and Web Speech is not active):** Shows keyboard
+  shortcuts for caption control and tips for best captioning results. Also
+  shows the Web Speech API section so you can switch sources.
+- **When Web Speech is active:** Shows an active status and a "Stop Web Speech"
+  button.
+- **When no source is running:** Shows available options — the Web Speech API
+  (with a "Start" button if supported) and Whisper.cpp setup instructions.
 
 The button is a standard `<button>` element with an `aria-live="polite"` region
 so screen readers announce status changes.
@@ -716,6 +733,85 @@ by default. See `whisper-demo/index.html` for placeholder instructions.
 
 When a WASM build is present, the Whisper model is downloaded to the browser
 and runs locally. No audio data is sent to any server.
+
+---
+
+## Web Speech API Captions
+
+`slides/webspeech-captions.js` provides a ready-to-use browser captioning
+integration using the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API).
+It works in **Chrome and Edge** on any HTTPS origin (including GitHub Pages) —
+no local binary, server, or build step is required.
+
+### How Web Speech Works
+
+The script sets up a `SpeechRecognition` session and writes transcript text
+directly to the `.live-caption-display` element created by `captions-button.js`.
+It also dispatches a `webspeech-status` custom event on `document` whenever the
+active state changes, so the caption button indicator updates immediately.
+
+While Web Speech is active, `captions-button.js` skips its regular poll of
+`whisper-demo/transcript.json` to prevent the two sources from overwriting
+each other.
+
+### Public API
+
+The script exposes a single global object:
+
+```javascript
+window.WebSpeechCaptions = {
+  isSupported,  // true if SpeechRecognition is available in this browser
+  isActive,     // true while recognition is running
+  start(),      // request microphone and begin recognition; returns false on failure
+  stop()        // stop recognition
+};
+```
+
+A `webspeech-status` CustomEvent is dispatched on `document` whenever the
+active state changes:
+
+```javascript
+// detail: { active: true | false, error?: 'permission-denied' }
+document.addEventListener('webspeech-status', (e) => {
+  console.log('Web Speech active:', e.detail.active);
+});
+```
+
+### Behavior Details
+
+- **Language**: Reads `document.documentElement.lang`; falls back to `'en-US'` if
+  not set. If the value is a language tag that the browser's speech engine does
+  not support, the browser will use its own default language.
+- **Continuous recognition**: `recognition.continuous = true` with
+  `interimResults = true` so words appear as you speak.
+- **Auto-restart**: If the browser stops recognition after silence (common on
+  mobile), the `onend` handler automatically calls `recognition.start()` again
+  as long as `isActive` is `true`.
+- **Word limit**: The final-result buffer is trimmed to the most recent
+  **30 words** (matching the Whisper display cap) to keep the caption bar concise.
+- **Microphone permission**: If the user denies microphone access
+  (`not-allowed` or `service-not-allowed` error), `isActive` is set to `false`
+  and a `webspeech-status` event with `error: 'permission-denied'` is dispatched.
+  Other errors (network, no-speech, audio-capture) are treated as transient; the
+  session restarts when `onend` fires.
+- **Firefox**: `SpeechRecognition` is not supported natively. The `isSupported`
+  flag will be `false` and the caption dialog will display a "not supported"
+  message instead of a start button.
+
+### Integration with the Caption Button
+
+`captions-button.js` wires the Web Speech controls into its modal dialog
+automatically:
+
+| Scenario | What the dialog shows |
+|----------|-----------------------|
+| Web Speech not supported | Informational note to use Chrome or Edge |
+| Web Speech available but not active | "Start Web Speech Captions" button |
+| Web Speech currently active | "Stop Web Speech" button |
+
+When the user clicks **Start Web Speech Captions**, the dialog closes and
+recognition begins. The caption button indicator changes to 🟢 immediately via
+the `webspeech-status` event.
 
 ---
 
@@ -894,6 +990,7 @@ whisper-slides/
 │   ├── slides.css                # All styles — theming, layouts, captions
 │   ├── b6plus.js                 # B6+ presentation engine (do not edit)
 │   ├── captions-button.js        # Caption status button and live display
+│   ├── webspeech-captions.js     # Web Speech API captions (Chrome/Edge)
 │   ├── whisper-transcript.js     # In-slide transcript box polling
 │   ├── fullscreen-fix.js         # Suppress fullscreen error dialogs
 │   ├── offline-indicator.js      # Network connectivity monitor
