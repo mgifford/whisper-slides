@@ -2103,6 +2103,8 @@ function scrollSlide()
 {
   var compStyle, i, h, border, pad, bottom;
 
+  if (curslide == null) return;
+
   // Get the bottom of the current slide and the bottom padding and border.
   bottom = curslide.getBoundingClientRect().bottom;
   compStyle = window.getComputedStyle(curslide);
