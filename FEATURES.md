@@ -32,7 +32,9 @@ Complete documentation for the Whisper Live Captioning Presentation Template.
    - [Color and Contrast](#color-and-contrast)
    - [Screen Reader Compatibility](#screen-reader-compatibility)
    - [Offline Indicator](#offline-indicator)
-5. [Whisper Integration](#whisper-integration)
+5. [Live Captioning](#live-captioning)
+   - [Web Speech API (Browser)](#web-speech-api-browser)
+   - [Whisper.cpp (Local)](#whispercpp-local)
    - [How It Works](#how-it-works)
    - [GitHub Pages / Cloud Alternatives](#github-pages--cloud-alternatives)
    - [Setup Guide](#setup-guide)
@@ -59,14 +61,22 @@ Complete documentation for the Whisper Live Captioning Presentation Template.
 ## Overview
 
 This template lets you build and deliver accessible HTML slide presentations with
-optional real-time live captions powered by
-[Whisper.cpp](https://github.com/ggerganov/whisper.cpp).
+real-time live captions. Two captioning modes are supported:
+
+- **Web Speech API** (`slides/webspeech-captions.js`) — runs entirely in Chrome
+  or Edge, including on GitHub Pages and other static hosts. No installation is
+  needed; click the captions button and allow microphone access.
+- **Whisper.cpp** (`slides/whisper-transcript.js`) — a high-accuracy on-device
+  speech recognition binary that runs locally. Requires building `whisper.cpp`
+  and starting a local server process; does not work on static hosting.
 
 Key characteristics:
 
 - **No build step.** Open `index.html` directly in a browser.
-- **Local-first captioning.** Live captions require a local server process.
-  They do not work on GitHub Pages or other static hosts.
+- **Browser captioning available.** The Web Speech API integration works on
+  GitHub Pages and any HTTPS-hosted site in Chrome or Edge.
+- **High-accuracy local captioning.** Whisper.cpp runs on your machine with no
+  data sent to external servers.
 - **Test-driven.** HTML validation, link checking, spell checking, and
   accessibility audits run with `npm test`.
 - **WCAG 2.2 AA.** Accessibility is a first-class requirement, not an add-on.
@@ -404,12 +414,52 @@ slide mode.
 
 ---
 
-## Whisper Integration
+## Live Captioning
+
+This template supports two captioning engines. Both write text to the same
+`.live-caption-display` element managed by `slides/captions-button.js`, so you
+can switch between them without modifying the presentation itself.
+
+### Web Speech API (Browser)
+
+`slides/webspeech-captions.js` integrates the browser's built-in
+[Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
+(`SpeechRecognition`). This is the easiest way to get live captions — it works
+on [GitHub Pages](https://mgifford.github.io/whisper-slides/) and any
+HTTPS-hosted site, with no installation required.
+
+**How to start:**
+
+1. Open the presentation in **Chrome** or **Edge** (Firefox does not support
+   `SpeechRecognition`).
+2. Click the **captions button** (⏺) in the toolbar.
+3. Choose **Start Web Speech Captions** in the dialog.
+4. Allow microphone access when prompted — transcription begins immediately.
+
+**Technical details:**
+
+- Implemented as `window.WebSpeechCaptions` with `.isSupported`, `.isActive`,
+  `.start()`, and `.stop()` methods.
+- Enables continuous recognition with `interimResults: true` so words appear
+  as you speak, not just at sentence boundaries.
+- Keeps a rolling ~30-word buffer of final results plus any interim text.
+- Auto-restarts after browser silence timeouts.
+- When Web Speech is active, the Whisper JSON poll is paused so the two
+  sources do not conflict.
+- Language is read from the document's `lang` attribute (defaults to `en-US`).
+
+### Whisper.cpp (Local)
+
+`slides/whisper-transcript.js` polls `whisper-demo/transcript.json` to display
+captions produced by a locally running `whisper-stream` binary. This path
+delivers higher accuracy (same model as the original Whisper research) but
+requires building `whisper.cpp` and running a local process — it does not work
+on static hosting.
 
 ### How It Works
 
-The captioning system has three independent parts that communicate through a
-single JSON file:
+The Whisper captioning system has three independent parts that communicate
+through a single JSON file:
 
 ```
 Whisper.cpp          transcript.json         Browser
@@ -440,32 +490,29 @@ The JSON file format is:
   detect whether Whisper is still running (stale if older than 10 seconds).
 - `active` — Optional explicit flag; takes priority over the timestamp check.
 
-> **Why local only?**  
+> **Why is Whisper.cpp local only?**  
 > `whisper-stream` is a native binary that reads from the microphone and writes
 > to the local filesystem. Static hosting platforms (GitHub Pages, Netlify,
-> etc.) cannot run native binaries or provide filesystem access.
+> etc.) cannot run native binaries or provide filesystem access. Use the
+> **Web Speech API** option above for browser-based captioning on static hosts.
 
 ### GitHub Pages / Cloud Alternatives
 
-If you need live captions on GitHub Pages or another static host, these options
-avoid the need for a local binary:
+The Web Speech API (described above) is the recommended choice for GitHub Pages
+and other static hosts — it is already integrated and requires no extra setup.
+Additional options if you need higher accuracy or different browser support:
 
 | Option | How it works | Static hosting? | Quality | Setup |
 |--------|-------------|-----------------|---------|-------|
-| **Web Speech API** | Browser built-in (Chrome/Edge) | ✅ Yes | Good | None |
+| **Web Speech API** | Browser built-in (Chrome/Edge) — **already integrated** | ✅ Yes | Good | None |
 | **Whisper WASM** | Whisper in WebAssembly, runs in browser | ✅ Yes (HTTPS + CORS) | High | Medium |
 | **VibeVoice** | Browser-based voice transcription | ✅ Yes | Untested | Low |
 | **Cloud API proxy** | OpenAI / Azure / AssemblyAI + proxy | ⚠️ Needs proxy | High | Medium–High |
 
 #### Web Speech API
 
-The [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
-(`SpeechRecognition`) is built into Chrome and Edge. It requires no install,
-works over HTTPS, and is compatible with static hosting including GitHub Pages.
-Because the API exposes transcript text directly to JavaScript, the output can
-be formatted to match the `whisper-demo/transcript.json` schema so the existing
-caption display picks it up without any other changes to the presentation.
-Firefox does not support `SpeechRecognition` natively.
+See the [Web Speech API (Browser)](#web-speech-api-browser) section above —
+this is already implemented in `slides/webspeech-captions.js`.
 
 #### Whisper WASM
 
