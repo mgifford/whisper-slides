@@ -34,8 +34,8 @@
   <section class="slide cover clear" id="cover" aria-label="Cover: Whisper Live Captioning Demo">
     <h1>Whisper Live Captioning Demo</h1>
     <h2>Accessible HTML Presentation with Real-Time Transcription</h2>
-    <address>A template for creating presentations with live captions using Whisper.cpp</address>
-    <div class="notes" hidden>Standalone presentation template demonstrating Whisper.cpp integration for live captioning.</div>
+    <address>Live captions via Web Speech API (browser, no install) or Whisper.cpp (local, high accuracy)</address>
+    <div class="notes" hidden>Standalone presentation template demonstrating both browser-based Web Speech API captions and local Whisper.cpp integration for live captioning.</div>
   </section>
 
     <!-- Slide 6: Caption Listener Status -->
@@ -93,17 +93,16 @@
     </section>
 
   <!-- Slide 2: Setup -->
-  <section class="slide" id="setup" aria-label="Setup">
-    <h2>Setup (Local Only)</h2>
+  <section class="slide" id="setup" aria-label="Captioning Options">
+    <h2>Captioning Options</h2>
     <ul>
-      <li>Live captioning only works when running locally (not on GitHub Pages)</li>
-      <li>Point the iframe at a local demo page (gitignored)</li>
-      <li>Write transcript JSON to <code>/whisper-demo/transcript.json</code></li>
-      <li>Use provided helper to launch Whisper or mirror output</li>
+      <li><strong>Web Speech API</strong> — works in Chrome and Edge, including on GitHub Pages; click the captions button to start</li>
+      <li><strong>Whisper.cpp</strong> — high-accuracy local binary; requires building and running locally</li>
+      <li>Both options use the same caption display at the bottom of the screen</li>
     </ul>
     <div class="details" hidden>
-      <p><strong>Why local only?</strong> Whisper.cpp requires a compiled binary with microphone access and file system writes - not possible with static hosting.</p>
-      <p><strong>Runner:</strong> <code>npm run dev:whisper</code> (configure with <code>WHISPER_BIN</code> &amp; <code>WHISPER_MODEL</code>)</p>
+      <p><strong>Web Speech API:</strong> No install needed. Open in Chrome or Edge, click the captions button, choose <em>Start Web Speech Captions</em>, and allow microphone access.</p>
+      <p><strong>Whisper.cpp (local only):</strong> Run <code>npm run dev:whisper</code> after building the binary (configure with <code>WHISPER_BIN</code> &amp; <code>WHISPER_MODEL</code>).</p>
       <p><strong>Watcher alternative:</strong> <code>npm run dev:transcript</code> to mirror <code>transcript.txt</code> to JSON</p>
     </div>
   </section>

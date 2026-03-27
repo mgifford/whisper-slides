@@ -1,13 +1,17 @@
 # Whisper Live Captioning Presentation Template
 
-An accessible HTML presentation template with real-time live captioning powered by [Whisper.cpp](https://github.com/ggerganov/whisper.cpp). This is a standalone, test-driven presentation you can use as a starting point for creating your own presentations with live transcription.
+An accessible HTML presentation template with real-time live captioning. Two captioning options are supported:
 
-The transcripts will only work when running locally, and not on GitHub Pages where this project is hosted. 
+- **Web Speech API** — works directly in Chrome or Edge, including on [GitHub Pages](https://mgifford.github.io/whisper-slides/), with no installation needed.
+- **Whisper.cpp** — a high-accuracy local speech recognition binary that runs offline on your machine.
+
+This is a standalone, test-driven presentation you can use as a starting point for creating your own presentations with live transcription.
 
 ## ✨ Features
 
 - **Accessible HTML slides** using the [B6+ framework](https://www.w3.org/Talks/Tools/b6plus/)
-- **Real-time live captioning** with Whisper.cpp speech recognition (**local only** - see note below)
+- **Browser-based live captioning** with the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) — works on GitHub Pages in Chrome and Edge, no install needed
+- **High-accuracy local captioning** with [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) when running on your own machine
 - **Standalone and portable** - no build system required, just open `index.html` in a browser
 - **Test-driven** - includes scripts to validate links and accessibility
 - **Keyboard navigation** - full presentation control without a mouse
@@ -15,7 +19,7 @@ The transcripts will only work when running locally, and not on GitHub Pages whe
 
 See [FEATURES.md](FEATURES.md) for exhaustive documentation of all features, including accessibility details, the presenter/audience view, Whisper integration, and customization options.
 
-> **⚠️ Important**: Live captioning with Whisper.cpp only works when running locally on your machine. It **will not work** on GitHub Pages or other static hosting because it requires a local server process with microphone access. The presentation slides themselves work fine on GitHub Pages, but without live captions.
+> **ℹ️ Note**: The **Web Speech API** works directly in Chrome and Edge — including on [GitHub Pages](https://mgifford.github.io/whisper-slides/) — and requires no installation. The **Whisper.cpp** local binary offers higher accuracy but only works when running locally on your machine. The presentation slides themselves work in any browser.
 
 ## 🌐 GitHub Pages Alternatives
 
@@ -77,13 +81,11 @@ git submodule update --init --recursive
 
 Simply open `index.html` in your web browser. The presentation works without any build step!
 
-**For GitHub Pages deployment**: You can view the presentation at `https://mgifford.github.io/whisper-slides/` but live captioning will not be available (local-only feature).
+**On GitHub Pages**: You can view and use the presentation at `https://mgifford.github.io/whisper-slides/`. The Web Speech API captions work there too — open the presentation in Chrome or Edge and click the captions button.
 
-### 3. (Optional) Enable Live Captioning
+### 3. (Optional) Enable Local Captioning with Whisper.cpp
 
-**Note**: Live captioning only works when running the presentation locally, not on GitHub Pages or other static hosting.
-
-To enable real-time live captioning:
+**Note**: Whisper.cpp captioning only works when running the presentation locally, not on GitHub Pages or other static hosting. For browser-based captioning, use the Web Speech API option described above — it works everywhere.
 
 #### Build Whisper.cpp
 
@@ -133,12 +135,13 @@ whisper-slides/
 ├── slides/                 # Presentation framework (B6+)
 │   ├── slides.css          # Styling
 │   ├── b6plus.js           # Core presentation engine
-│   ├── captions-button.js  # Live caption controls
-│   └── whisper-transcript.js # Transcript polling
+│   ├── captions-button.js  # Live caption controls and status display
+│   ├── webspeech-captions.js # Browser-based Web Speech API captions
+│   └── whisper-transcript.js # Transcript polling (local Whisper.cpp)
 ├── whisper-demo/           # Demo assets and transcript output
 │   ├── index.html          # Whisper web demo (optional)
 │   └── transcript.json     # Generated transcript (gitignored)
-├── whisper.cpp/            # Git submodule for live captioning
+├── whisper.cpp/            # Git submodule for local live captioning
 └── package.json            # NPM scripts for development
 ```
 
