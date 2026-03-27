@@ -85,6 +85,7 @@
       <ol>
         <li>Open a terminal in your project root.</li>
         <li>Set <code>WHISPER_BIN</code> and <code>WHISPER_MODEL</code> environment variables if needed.</li>
+        <li>Set <code>WHISPER_LANGUAGE</code> to an ISO 639-1 code (e.g. <code>fr</code>, <code>de</code>, <code>ja</code>) if not speaking English. Omit for auto-detection.</li>
         <li>Run <code>npm run dev:whisper</code> to start the caption listener and transcript writer.</li>
         <li>Reload this page. The green button will appear when the transcript is available.</li>
       </ol>
@@ -98,10 +99,11 @@
       <li><strong>Web Speech API</strong> — works in Chrome and Edge, including on GitHub Pages; click the captions button to start</li>
       <li><strong>Whisper.cpp</strong> — high-accuracy local binary; requires building and running locally</li>
       <li>Both options use the same caption display at the bottom of the screen</li>
+      <li>Language selection is available in the captions dialog (70+ languages supported)</li>
     </ul>
     <div class="details" hidden>
-      <p><strong>Web Speech API:</strong> No install needed. Open in Chrome or Edge, click the captions button, choose <em>Start Web Speech Captions</em>, and allow microphone access.</p>
-      <p><strong>Whisper.cpp (local only):</strong> Run <code>npm run dev:whisper</code> after building the binary (configure with <code>WHISPER_BIN</code> &amp; <code>WHISPER_MODEL</code>).</p>
+      <p><strong>Web Speech API:</strong> No install needed. Open in Chrome or Edge, click the captions button, choose <em>Start Web Speech Captions</em>, allow microphone access, and select your spoken language from the dropdown.</p>
+      <p><strong>Whisper.cpp (local only):</strong> Run <code>npm run dev:whisper</code> after building the binary (configure with <code>WHISPER_BIN</code>, <code>WHISPER_MODEL</code>, and optionally <code>WHISPER_LANGUAGE</code>).</p>
       <p><strong>Watcher alternative:</strong> <code>npm run dev:transcript</code> to mirror <code>transcript.txt</code> to JSON</p>
     </div>
   </section>
@@ -132,11 +134,12 @@
       <li>Built into Chrome and Edge — no install or local server needed</li>
       <li>Works on GitHub Pages and any HTTPS-hosted site</li>
       <li>Click the <strong>captions</strong> button in the toolbar and choose <em>Start Web Speech Captions</em></li>
-      <li>Your browser will ask for microphone permission, then begin transcribing in real time</li>
+      <li>Select your spoken language from the dropdown (70+ languages available)</li>
       <li>Firefox does not support <code>SpeechRecognition</code>; use Chrome or Edge</li>
     </ul>
     <div class="notes" hidden>
       <p>The Web Speech API integration (slides/webspeech-captions.js) uses window.SpeechRecognition (or webkitSpeechRecognition for older Chrome). It enables continuous, interim-results mode so words appear as you speak. The final text buffer keeps the last ~30 words visible. When Web Speech is active the Whisper JSON poll is paused so the two sources do not conflict.</p>
+      <p>The selected language is stored in localStorage under the key whisperSlides.captionLanguage and defaults to the HTML lang attribute value (en-us). Changing the language in the dialog restarts recognition immediately.</p>
     </div>
   </section>
 

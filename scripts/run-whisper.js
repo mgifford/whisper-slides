@@ -9,6 +9,10 @@
 //
 //   node scripts/run-whisper.js --bin /path/to/whisper-stream --model /path/to/model.bin
 //
+//   # Specify the spoken language (ISO 639-1 code, e.g. fr, de, es, ja):
+//   WHISPER_LANGUAGE=fr node scripts/run-whisper.js
+//   node scripts/run-whisper.js --language fr
+//
 const { spawn } = require('child_process');
 const fs = require('fs');
 const os = require('os');
@@ -19,6 +23,7 @@ function parseArgs() {
   const cfg = {
     bin: process.env.WHISPER_BIN || null,
     model: process.env.WHISPER_MODEL || null,
+    language: process.env.WHISPER_LANGUAGE || null,
     threads: parseInt(process.env.WHISPER_THREADS || String(Math.max(1, os.cpus().length - 1))),
     step: parseInt(process.env.WHISPER_STEP || '500'),
     length: parseInt(process.env.WHISPER_LENGTH || '5000'),
@@ -32,6 +37,10 @@ function parseArgs() {
         break;
       case '--model':
         cfg.model = args[++i];
+        break;
+      case '--language':
+      case '-l':
+        cfg.language = args[++i];
         break;
       case '--threads':
         cfg.threads = parseInt(args[++i]);
@@ -48,10 +57,13 @@ function parseArgs() {
         break;
       case '-h':
       case '--help':
-        console.log(`Usage: node scripts/run-whisper.js [--bin <path>] [--model <path>] [--threads N] [--step ms] [--length ms] [-- <extra flags>]
+        console.log(`Usage: node scripts/run-whisper.js [--bin <path>] [--model <path>] [--language <code>] [--threads N] [--step ms] [--length ms] [-- <extra flags>]
 
 Environment variables:
-  WHISPER_BIN, WHISPER_MODEL, WHISPER_THREADS, WHISPER_STEP, WHISPER_LENGTH
+  WHISPER_BIN, WHISPER_MODEL, WHISPER_LANGUAGE, WHISPER_THREADS, WHISPER_STEP, WHISPER_LENGTH
+
+Language codes are ISO 639-1 (e.g. en, fr, de, es, ja, zh).
+If omitted, Whisper uses auto-detection.
 `);
         process.exit(0);
       default:
@@ -117,7 +129,14 @@ async function main() {
     process.exit(1);
   }
 
-  const args = ['-m', model, '-t', String(cfg.threads), '--step', String(cfg.step), '--length', String(cfg.length), ...cfg.extra];
+  const args = ['-m', model, '-t', String(cfg.threads), '--step', String(cfg.step), '--length', String(cfg.length)];
+  if (cfg.language) {
+    args.push('-l', cfg.language);
+    console.log(`[run-whisper] Language: ${cfg.language}`);
+  } else {
+    console.log('[run-whisper] Language: auto-detect');
+  }
+  args.push(...cfg.extra);
   console.log(`[run-whisper] Launching: ${bin} ${args.join(' ')}`);
   console.log(`[run-whisper] Writing transcript to: ${outFile}`);
 

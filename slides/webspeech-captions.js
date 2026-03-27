@@ -26,14 +26,36 @@
   var recognition = null;
   var finalBuffer = '';
   var MAX_DISPLAY_WORDS = 30; // Keep approximately 2–3 visible lines of text
+  var STORAGE_KEY = 'whisperSlides.captionLanguage';
 
   // Public API
   window.WebSpeechCaptions = {
     isSupported: isSupported,
     isActive: false,
     start: start,
-    stop: stop
+    stop: stop,
+    setLanguage: setLanguage,
+    getLanguage: getLang
   };
+
+  function getLang() {
+    try {
+      var stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return stored;
+    } catch (e) { /* ignore – private browsing may block localStorage */ }
+    return document.documentElement.lang || 'en-US';
+  }
+
+  function setLanguage(lang) {
+    try {
+      localStorage.setItem(STORAGE_KEY, lang);
+    } catch (e) { /* ignore */ }
+    // Restart live recognition so the new language takes effect immediately
+    if (window.WebSpeechCaptions.isActive) {
+      stop();
+      start();
+    }
+  }
 
   function getDisplay() {
     return document.querySelector('.live-caption-display');
@@ -58,7 +80,7 @@
     recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = document.documentElement.lang || 'en-US';
+    recognition.lang = getLang();
 
     recognition.onstart = function () {
       window.WebSpeechCaptions.isActive = true;
