@@ -19,6 +19,8 @@ This is a standalone, test-driven presentation you can use as a starting point f
 
 See [FEATURES.md](FEATURES.md) for exhaustive documentation of all features, including accessibility details, the presenter/audience view, Whisper integration, and customization options.
 
+See [EVENTS.md](EVENTS.md) for a practical guide to deploying live captions at conferences, camps, and meet-ups — including room setup, volunteer responsibilities, and lessons from the [MidCamp live-captioning project](https://github.com/MidCamp/live-captioning).
+
 > **ℹ️ Note**: The **Web Speech API** works directly in Chrome and Edge — including on [GitHub Pages](https://mgifford.github.io/whisper-slides/) — and requires no installation. The **Whisper.cpp** local binary offers higher accuracy but only works when running locally on your machine. The presentation slides themselves work in any browser.
 
 ## 🌐 GitHub Pages Alternatives
@@ -245,6 +247,7 @@ Whisper.cpp is from [ggerganov/whisper.cpp](https://github.com/ggerganov/whisper
 
 - Presentation framework: [B6+ by Bert Bos (W3C)](https://www.w3.org/Talks/Tools/b6plus/)
 - Speech recognition: [Whisper.cpp by Georgi Gerganov](https://github.com/ggerganov/whisper.cpp)
+- Event captioning inspiration: [MidCamp Live Captioning](https://github.com/MidCamp/live-captioning)
 - Created by [Mike Gifford](https://ox.ca)
 
 ## 🤝 Contributing
