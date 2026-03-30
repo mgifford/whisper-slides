@@ -43,7 +43,18 @@
       var stored = localStorage.getItem(STORAGE_KEY);
       if (stored) return stored;
     } catch (e) { /* ignore – private browsing may block localStorage */ }
-    return document.documentElement.lang || 'en-US';
+    var docLang = document.documentElement.lang;
+    if (docLang) {
+      // Normalize to canonical BCP 47 casing (e.g. 'en-us' → 'en-US')
+      try {
+        docLang = Intl.getCanonicalLocales(docLang)[0];
+      } catch (e) {
+        // Fallback for browsers without Intl.getCanonicalLocales
+        var parts = docLang.split('-');
+        docLang = parts[0].toLowerCase() + (parts[1] ? '-' + parts[1].toUpperCase() : '');
+      }
+    }
+    return docLang || 'en-US';
   }
 
   function setLanguage(lang) {
