@@ -437,7 +437,7 @@ HTTPS-hosted site, with no installation required.
 
 1. Open the presentation in **Chrome** or **Edge** (Firefox does not support
    `SpeechRecognition`).
-2. Click the **captions button** (⏺) in the toolbar.
+2. Click the **captions button** (⏹) in the toolbar.
 3. Choose **Start Web Speech Captions** in the dialog.
 4. Allow microphone access when prompted — transcription begins immediately.
 
@@ -673,9 +673,9 @@ The caption button appears in the B6+ UI bar at the top of the page.
 
 | State | Indicator | Tooltip |
 |-------|-----------|---------|
-| Web Speech API active | 🟢 green circle | "Captions On: Web Speech API active" |
-| Whisper running | 🟢 green circle | "Captions On: Whisper transcript available" |
-| No caption source active | ⏺ grey circle | "Captions Off: Click for help" |
+| Web Speech API active | 🔴 red circle | "Captions On: Web Speech API active" |
+| Whisper running | 🔴 red circle | "Captions On: Whisper transcript available" |
+| No caption source active | ⏹ black square | "Captions Off: Click for help" |
 
 Clicking the button opens a modal dialog:
 
@@ -810,7 +810,7 @@ automatically:
 | Web Speech currently active | "Stop Web Speech" button |
 
 When the user clicks **Start Web Speech Captions**, the dialog closes and
-recognition begins. The caption button indicator changes to 🟢 immediately via
+recognition begins. The caption button indicator changes to 🔴 immediately via
 the `webspeech-status` event.
 
 ---

@@ -4,8 +4,8 @@
  * Adds a caption status button to the b6-ui menu bar that:
  * - Polls whisper-demo/transcript.json every 2 seconds (Whisper.cpp path)
  * - Reflects Web Speech API state when webspeech-captions.js is loaded
- * - Shows green circle (🟢) when any caption source is active
- * - Shows grey circle (⏺) when no caption source is running
+ * - Shows red circle (🔴) when any caption source is active (recording)
+ * - Shows black square (⏹) when no caption source is running
  * - Opens a modal with setup / control instructions on click
  *
  * Load this script after b6plus.js:
@@ -199,7 +199,7 @@
     // Create caption button
     const captionbutton = document.createElement('button');
     captionbutton.className = 'b6-captionbutton';
-    captionbutton.innerHTML = '<span class="caption-indicator">⏺</span> <span>captions</span>';
+    captionbutton.innerHTML = '<span class="caption-indicator">⏹</span> <span>captions</span>';
     captionbutton.setAttribute('title', 'Captions Off: Click for help');
     captionbutton.setAttribute('aria-live', 'polite');
     
@@ -324,7 +324,7 @@
     dialog.style.cssText = 'background: var(--slide-bg, #fff); color: var(--slide-fg, #000); padding: 2em; border-radius: 8px; max-width: 600px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); overflow-y: auto; max-height: 90vh;';
 
     // Check if captions are currently running
-    const isRunning = document.querySelector('.b6-captionbutton .caption-indicator')?.textContent === '🟢';
+    const isRunning = document.querySelector('.b6-captionbutton .caption-indicator')?.textContent === '🔴';
     const webSpeech = window.WebSpeechCaptions || null;
     const webSpeechSupported = webSpeech && webSpeech.isSupported;
     const webSpeechActive = webSpeech && webSpeech.isActive;
@@ -453,10 +453,10 @@
       if (running) {
         const source = webSpeechActive ? 'Web Speech API active' : 'Whisper transcript available';
         button.setAttribute('title', 'Captions On: ' + source);
-        if (indicator) indicator.textContent = '🟢';
+        if (indicator) indicator.textContent = '🔴';
       } else {
         button.setAttribute('title', 'Captions Off: Click for help');
-        if (indicator) indicator.textContent = '⏺';
+        if (indicator) indicator.textContent = '⏹';
       }
     });
   }

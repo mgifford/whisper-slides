@@ -42,7 +42,7 @@
       <h2>Caption Listener Status</h2>
       <div id="caption-listener-widget"></div>
       <div class="details" hidden>
-        <p>The widget below checks if the transcript file is available. If Whisper is running, you’ll see a green button. If not, a help link appears with setup instructions.</p>
+        <p>The widget below checks if the transcript file is available. If Whisper is running, you’ll see a red circle (🔴) recording indicator. If not, a help link appears with setup instructions.</p>
       </div>
     </section>
     <script>
@@ -53,7 +53,7 @@
       const url = 'whisper-demo/transcript.json';
       function render(running) {
         if (running) {
-          el.innerHTML = '<button style="background: #1db954; color: #fff; border: none; border-radius: 1.5em; padding: 0.7em 1.5em; font-size: 1.2em; font-weight: bold; box-shadow: 0 1px 4px #111;">🟢 Whisper Caption Listener Running</button>';
+          el.innerHTML = '<button style="background: #c00; color: #fff; border: none; border-radius: 1.5em; padding: 0.7em 1.5em; font-size: 1.2em; font-weight: bold; box-shadow: 0 1px 4px #111;">🔴 Whisper Caption Listener Running</button>';
         } else {
           el.innerHTML = '<a href="#caption-help" style="background: #eee; color: #005EA2; border: 1px solid #bbb; border-radius: 1.5em; padding: 0.7em 1.5em; font-size: 1.2em; font-weight: bold; text-decoration: none; display: inline-block;">🛈 Caption: How to Start</a>';
         }
@@ -87,7 +87,7 @@
         <li>Set <code>WHISPER_BIN</code> and <code>WHISPER_MODEL</code> environment variables if needed.</li>
         <li>Set <code>WHISPER_LANGUAGE</code> to an ISO 639-1 code (e.g. <code>fr</code>, <code>de</code>, <code>ja</code>) if not speaking English. Omit for auto-detection.</li>
         <li>Run <code>npm run dev:whisper</code> to start the caption listener and transcript writer.</li>
-        <li>Reload this page. The green button will appear when the transcript is available.</li>
+        <li>Reload this page. The red circle (🔴) recording indicator will appear when the transcript is available.</li>
       </ol>
       <p class="small">If you prefer, you can use <code>npm run dev:transcript</code> to mirror a text file to JSON instead.</p>
     </section>
