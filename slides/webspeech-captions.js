@@ -6,10 +6,11 @@
  * and any HTTPS-hosted static site.
  *
  * Exposes window.WebSpeechCaptions with:
- *   .isSupported  — true if SpeechRecognition is available
- *   .isActive     — true while recognition is running
- *   .start()      — request microphone and begin recognition
- *   .stop()       — stop recognition
+ *   .isSupported    — true if SpeechRecognition is available
+ *   .isActive       — true while recognition is running in this window
+ *   .isRemoteActive — true while another window is streaming captions via BroadcastChannel
+ *   .start()        — request microphone and begin recognition
+ *   .stop()         — stop recognition
  *
  * Transcript text is written directly to the .live-caption-display element
  * (created by captions-button.js). A 'webspeech-status' CustomEvent is
@@ -32,11 +33,37 @@
   window.WebSpeechCaptions = {
     isSupported: isSupported,
     isActive: false,
+    isRemoteActive: false, // true when another window is streaming Web Speech captions
     start: start,
     stop: stop,
     setLanguage: setLanguage,
     getLanguage: getLang
   };
+
+  // BroadcastChannel for cross-window caption sync (e.g. b6+ 2nd window).
+  // Sends caption text and status to all other tabs/windows on the same origin.
+  var captionChannel = null;
+  try {
+    captionChannel = new BroadcastChannel('b6-live-captions');
+    captionChannel.onmessage = function (ev) {
+      if (!ev.data) return;
+      if (ev.data.type === 'caption-text') {
+        // Another window produced caption text — display it here too.
+        var el = getDisplay();
+        if (el && ev.data.text) el.textContent = ev.data.text;
+      } else if (ev.data.type === 'caption-status') {
+        // Another window started or stopped Web Speech recognition.
+        window.WebSpeechCaptions.isRemoteActive = !!ev.data.active;
+        document.dispatchEvent(
+          new CustomEvent('webspeech-status', { detail: { active: ev.data.active } })
+        );
+      }
+    };
+  } catch (_) {
+    // BroadcastChannel unavailable (e.g. sandboxed iframe, old browser, or
+    // private-browsing restriction). Cross-window caption sync is skipped;
+    // captions still work within a single window as before.
+  }
 
   function getLang() {
     try {
@@ -78,6 +105,11 @@
     document.dispatchEvent(
       new CustomEvent('webspeech-status', { detail: detail })
     );
+    // Notify other windows (e.g. the b6+ 2nd window) of the status change.
+    if (captionChannel) {
+      try { captionChannel.postMessage({ type: 'caption-status', active: active }); }
+      catch (_) { /* ignore: channel may be closing; status is non-critical */ }
+    }
   }
 
   function start() {
@@ -119,6 +151,11 @@
       var display = getDisplay();
       if (display && displayText) {
         display.textContent = displayText;
+      }
+      // Broadcast the caption text to other windows (e.g. the b6+ 2nd window).
+      if (captionChannel && displayText) {
+        try { captionChannel.postMessage({ type: 'caption-text', text: displayText }); }
+        catch (_) { /* ignore: channel may be closing; text already shown locally */ }
       }
     };
 
