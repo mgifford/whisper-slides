@@ -552,10 +552,14 @@
   function updateCaptionButton(running) {
     const buttons = document.querySelectorAll('.b6-captionbutton');
     const webSpeechActive = window.WebSpeechCaptions && window.WebSpeechCaptions.isActive;
+    const webSpeechRemote = window.WebSpeechCaptions && window.WebSpeechCaptions.isRemoteActive;
     buttons.forEach(button => {
       const indicator = button.querySelector('.caption-indicator');
       if (running) {
-        const source = webSpeechActive ? 'Web Speech API active' : 'Whisper transcript available';
+        let source;
+        if (webSpeechActive) source = 'Web Speech API active';
+        else if (webSpeechRemote) source = 'Web Speech API active (another window)';
+        else source = 'Whisper transcript available';
         button.setAttribute('title', 'Captions On: ' + source);
         if (indicator) indicator.textContent = '🔴';
       } else {
@@ -606,9 +610,10 @@
   }
 
   async function checkCaptions() {
-    // If Web Speech API is currently active, it owns the caption display;
-    // skip the Whisper JSON poll to avoid overwriting the live transcript.
-    if (window.WebSpeechCaptions && window.WebSpeechCaptions.isActive) {
+    // If Web Speech API is currently active (locally or in another window via
+    // BroadcastChannel), it owns the caption display; skip the Whisper JSON poll
+    // to avoid overwriting the live transcript.
+    if (window.WebSpeechCaptions && (window.WebSpeechCaptions.isActive || window.WebSpeechCaptions.isRemoteActive)) {
       updateCaptionButton(true);
       return;
     }
