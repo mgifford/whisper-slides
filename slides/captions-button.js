@@ -110,6 +110,9 @@
     
     // Always create caption display immediately (even if b6-ui doesn't exist yet)
     addLiveTranscriptDisplay();
+
+    // Create the index-view captions popup
+    createIndexCaptionPopup();
     
     // Always start polling for captions and element persistence
     startPolling();
@@ -161,12 +164,19 @@
   }
 
   function monitorPresentationMode() {
-    // Watch for body.full class to appear (presentation mode)
+    // Watch for body.full class to appear/disappear (entering/leaving presentation mode)
     const observer = new MutationObserver(() => {
       if (document.body.classList.contains('full')) {
         console.log('[Captions] Presentation mode detected, ensuring caption display exists');
         // Ensure caption display exists in presentation mode
         addLiveTranscriptDisplay();
+        // Hide the index popup — the main caption bar takes over
+        hideIndexCaptionPopup();
+      } else {
+        // Leaving presentation mode — re-show popup if captions are active
+        if (isCaptionActive()) {
+          showIndexCaptionPopup();
+        }
       }
     });
     
@@ -190,6 +200,100 @@
         }
       }
     }, 1000);
+  }
+
+  function createIndexCaptionPopup() {
+    if (document.getElementById('caption-index-popup')) return;
+
+    var popup = document.createElement('div');
+    popup.id = 'caption-index-popup';
+    popup.className = 'caption-index-popup';
+    popup.setAttribute('role', 'region');
+    popup.setAttribute('aria-label', 'Live captions');
+
+    // Restore minimized state from localStorage
+    var minimized = false;
+    try {
+      minimized = localStorage.getItem('whisperSlides.captionPopupMinimized') === 'true';
+    } catch (e) { /* ignore */ }
+
+    var header = document.createElement('div');
+    header.className = 'caption-index-popup-header';
+
+    var title = document.createElement('span');
+    title.className = 'caption-index-popup-title';
+    title.textContent = '🔴 Live Captions';
+
+    var toggleBtn = document.createElement('button');
+    toggleBtn.className = 'caption-index-popup-toggle';
+    toggleBtn.setAttribute('aria-label', minimized ? 'Expand captions' : 'Minimize captions');
+    toggleBtn.textContent = minimized ? '▲' : '▼';
+
+    header.appendChild(title);
+    header.appendChild(toggleBtn);
+
+    var body = document.createElement('div');
+    body.className = 'caption-index-popup-body';
+    body.setAttribute('aria-live', 'polite');
+    body.setAttribute('aria-atomic', 'false');
+
+    popup.appendChild(header);
+    popup.appendChild(body);
+    document.body.appendChild(popup);
+
+    if (minimized) {
+      popup.classList.add('minimized');
+    }
+
+    // Toggle minimize on header click
+    header.addEventListener('click', function () {
+      var isMin = popup.classList.toggle('minimized');
+      toggleBtn.textContent = isMin ? '▲' : '▼';
+      toggleBtn.setAttribute('aria-label', isMin ? 'Expand captions' : 'Minimize captions');
+      try {
+        localStorage.setItem('whisperSlides.captionPopupMinimized', isMin ? 'true' : 'false');
+      } catch (e) { /* ignore */ }
+    });
+
+    // Mirror caption text from .live-caption-display to popup body
+    function attachObserver() {
+      var mainDisplay = document.querySelector('.live-caption-display');
+      if (!mainDisplay) return false;
+      var observer = new MutationObserver(function () {
+        body.textContent = mainDisplay.textContent;
+      });
+      observer.observe(mainDisplay, { childList: true, subtree: true, characterData: true });
+      return true;
+    }
+
+    if (!attachObserver()) {
+      // .live-caption-display may not exist yet; retry up to ~10 s (20 × 500 ms)
+      var retryCount = 0;
+      var retryInterval = setInterval(function () {
+        retryCount++;
+        if (attachObserver() || retryCount >= 20) clearInterval(retryInterval);
+      }, 500);
+    }
+  }
+
+  function showIndexCaptionPopup() {
+    var popup = document.getElementById('caption-index-popup');
+    if (popup && !document.body.classList.contains('full')) {
+      popup.classList.add('visible');
+    }
+  }
+
+  function hideIndexCaptionPopup() {
+    var popup = document.getElementById('caption-index-popup');
+    if (popup) {
+      popup.classList.remove('visible');
+    }
+  }
+
+  function isCaptionActive() {
+    if (window.WebSpeechCaptions && window.WebSpeechCaptions.isActive) return true;
+    var indicator = document.querySelector('.b6-captionbutton .caption-indicator');
+    return !!(indicator && indicator.textContent === '🔴');
   }
 
   function addCaptionButton(uiBar) {
@@ -459,6 +563,13 @@
         if (indicator) indicator.textContent = '⏹';
       }
     });
+
+    // Show or hide the index-view popup depending on caption state and mode
+    if (running) {
+      showIndexCaptionPopup();
+    } else {
+      hideIndexCaptionPopup();
+    }
   }
 
   function updateLiveTranscript(text) {

@@ -79,6 +79,75 @@ body.full .slide {
   max-height: calc(100vh - 5em);
 }
 
+/* Caption popup for multi-slide/index view */
+.caption-index-popup {
+  position: fixed;
+  bottom: 1.5em;
+  right: 1.5em;
+  width: 380px;
+  max-width: calc(100vw - 3em);
+  background: #000;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  z-index: 9990;
+  display: none;
+}
+
+.caption-index-popup.visible {
+  display: block;
+}
+
+body.full .caption-index-popup {
+  display: none !important;
+}
+
+.caption-index-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4em 0.75em;
+  background: #222;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  user-select: none;
+}
+
+.caption-index-popup.minimized .caption-index-popup-header {
+  border-radius: 8px;
+}
+
+.caption-index-popup-header:hover {
+  background: #333;
+}
+
+.caption-index-popup-title {
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.caption-index-popup-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1em;
+  padding: 0;
+  line-height: 1;
+}
+
+.caption-index-popup-body {
+  padding: 0.75em 1em;
+  font-size: 1em;
+  line-height: 1.4;
+  max-height: 6em;
+  overflow: hidden;
+}
+
+.caption-index-popup.minimized .caption-index-popup-body {
+  display: none;
+}
+
 /* Iframe full width in demo frames */
 .demo-frame iframe {
   width: 100%;
